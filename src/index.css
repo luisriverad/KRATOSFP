@@ -1,0 +1,150 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  @apply bg-kratos-bg text-kratos-text font-sans antialiased;
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #D6D3CB; border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: #B8B5AC; }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+@layer components {
+  /* Panels */
+  .panel {
+    @apply bg-kratos-panel border border-kratos-border rounded-2xl shadow-panel;
+  }
+  .panel-flat {
+    @apply bg-kratos-panel border border-kratos-border rounded-2xl;
+  }
+  .panel-hover { transition: all 200ms ease; }
+  .panel-hover:hover {
+    border-color: #CFCCC3;
+    box-shadow: 0 4px 14px -4px rgba(15,14,12,0.09), 0 1px 2px rgba(15,14,12,0.04);
+  }
+  .surface-2 {
+    @apply rounded-xl border border-kratos-border bg-kratos-panel-2;
+  }
+
+  /* Chips — light & sober */
+  .chip {
+    @apply inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full border;
+  }
+  .chip-ok      { @apply chip bg-kratos-ok-soft     text-kratos-ok     border-kratos-ok/20; }
+  .chip-warn    { @apply chip bg-kratos-warn-soft   text-kratos-warn   border-kratos-warn/25; }
+  .chip-danger  { @apply chip bg-kratos-danger-soft text-kratos-danger border-kratos-danger/25; }
+  .chip-info    { @apply chip bg-kratos-info-soft   text-kratos-info   border-kratos-info/20; }
+  .chip-plum    { @apply chip bg-kratos-plum-soft   text-kratos-plum   border-kratos-plum/20; }
+  .chip-muted   { @apply chip bg-kratos-bg2         text-kratos-subtle border-kratos-border; }
+  .chip-solid   { @apply chip bg-kratos-ink         text-white         border-kratos-ink; }
+
+  /* Buttons */
+  .btn {
+    @apply inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border transition-all;
+  }
+  .btn-primary { @apply btn bg-kratos-ink border-kratos-ink text-white hover:bg-black; }
+  .btn-ghost   { @apply btn bg-white border-kratos-border text-kratos-ink hover:border-kratos-border-2 hover:bg-kratos-panel-2; }
+  .btn-red     { @apply btn bg-kratos-red border-kratos-red text-white hover:bg-kratos-red-2; }
+  .btn-link    { @apply inline-flex items-center gap-1 text-sm font-medium text-kratos-ink hover:text-kratos-red transition-colors; }
+
+  /* Section title — serif editorial */
+  .h-display {
+    @apply font-display font-semibold tracking-tight text-kratos-ink;
+  }
+  .section-title {
+    @apply font-display font-semibold text-lg text-kratos-ink tracking-tight;
+  }
+  .label-mono {
+    @apply font-mono text-[10px] uppercase tracking-[0.16em] text-kratos-muted;
+  }
+  .kpi-value {
+    @apply font-display text-3xl font-semibold text-kratos-ink;
+  }
+
+  /* Tables */
+  .table-row {
+    @apply border-b border-kratos-border/70 transition-colors;
+  }
+  .table-row:last-child { border-bottom: 0; }
+  .table-row:hover { @apply bg-kratos-bg2/50; }
+  .table-th {
+    @apply text-[10px] uppercase tracking-[0.14em] font-semibold text-kratos-muted text-left px-4 py-3 bg-kratos-panel-2 border-b border-kratos-border;
+  }
+  .table-td  { @apply px-4 py-3 text-sm text-kratos-text; }
+  .row-clickable { @apply cursor-pointer; }
+  .row-clickable:hover { @apply bg-kratos-red-soft/60; }
+}
+
+/* Pulse */
+.pulse-dot { position: relative; }
+.pulse-dot::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 9999px;
+  border: 1px solid currentColor;
+  animation: pulse-ring 1.6s ease-out infinite;
+}
+@keyframes pulse-ring {
+  0%   { transform: scale(0.7); opacity: 0.8; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+/* Recharts overrides — light theme */
+.recharts-tooltip-wrapper .recharts-default-tooltip {
+  background: #FFFFFF !important;
+  border: 1px solid #E5E3DC !important;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 14px -4px rgba(15,14,12,0.10);
+  padding: 8px 10px !important;
+}
+.recharts-tooltip-label { color: #4A453F !important; font-size: 11px !important; margin-bottom: 4px !important; }
+.recharts-tooltip-item { color: #1A1714 !important; font-size: 12px !important; }
+.recharts-cartesian-grid line { stroke: #ECEAE3 !important; }
+.recharts-cartesian-axis-line { stroke: #D6D3CB !important; }
+.recharts-cartesian-axis-tick-value tspan { fill: #6E685F !important; }
+
+/* Form */
+:where(input[type="text"], input[type="search"], input[type="number"], input[type="email"], textarea, select) {
+  background: #FFFFFF;
+  color: #1A1714;
+  border: 1px solid #E5E3DC;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 150ms ease;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: #1E3A8A;
+  box-shadow: 0 0 0 3px rgba(30,58,138,0.08);
+}
+input::placeholder { color: #9A958C; }
+
+/* Hide native spinners on number inputs */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] { -moz-appearance: textfield; }
+
+/* Hide native time picker indicator (Chrome/WebKit) */
+input[type="time"]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  width: 0;
+  margin: 0;
+}
