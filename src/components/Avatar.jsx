@@ -7,7 +7,7 @@ export default function Avatar({ name = '', color, size = 'md', subtitle, role }
   if (subtitle || role) {
     return (
       <div className="flex items-center gap-3">
-        <div className={`${sizes[size]} rounded-lg flex items-center justify-center font-display font-semibold text-white shrink-0`} style={{ background: `linear-gradient(135deg, ${bg}, ${bg}99)` }}>
+        <div className={`${sizes[size]} rounded-none flex items-center justify-center font-display font-semibold text-white shrink-0`} style={{ background: `linear-gradient(135deg, ${bg}, ${bg}99)` }}>
           {initials}
         </div>
         <div className="min-w-0">
@@ -19,7 +19,7 @@ export default function Avatar({ name = '', color, size = 'md', subtitle, role }
     )
   }
   return (
-    <div className={`${sizes[size]} rounded-lg flex items-center justify-center font-display font-semibold text-white shrink-0`} style={{ background: `linear-gradient(135deg, ${bg}, ${bg}99)` }}>
+    <div className={`${sizes[size]} rounded-none flex items-center justify-center font-display font-semibold text-white shrink-0`} style={{ background: `linear-gradient(135deg, ${bg}, ${bg}99)` }}>
       {initials}
     </div>
   )

@@ -9,6 +9,7 @@ import Drawer from '../components/Drawer'
 import ExpedienteProveedor from '../components/expedientes/ExpedienteProveedor'
 import ProgressBar from '../components/ProgressBar'
 import SortableTH from '../components/SortableTH'
+import BrainPanel from '../components/BrainPanel'
 import { compras, agentes, usuarios, checklists, fmtMXN } from '../data/mockData'
 import { expedientesProveedores, proveedorIndex, inventarioCompleto, ordenesCompra, listaCompras } from '../data/comprasData'
 import { reordenPredictivo, alertasSobreprecio, deteccionFraude, inventarioMuerto, formatosCompras } from '../data/iaData'
@@ -133,6 +134,10 @@ export default function Compras() {
             <div className="mt-3 text-[11px] text-kratos-subtle px-2">
               Política Kratos: 3 cotizaciones por requisición · evaluador automático AG-17
             </div>
+            <div className="mt-5"><BrainPanel tema="requisiciones" insights={[
+              { tag: 'Proyección', tone: 'warn', titulo: 'Cuello de botella en cotizaciones', prediccion: 'El 38% de requisiciones abiertas sigue sin completar sus 3 cotizaciones; al ritmo actual ~14 requis. rebasarán el SLA de 5 días hábiles antes de fin de mes.', accion: 'Activar AG-17 para auto-solicitar la 3ra cotización en las requis. con 2/3 mayores a 7 días.', confianza: 81 },
+              { tag: 'Alerta temprana', tone: 'danger', titulo: 'Requisiciones de prioridad Alta estancadas', prediccion: 'Las requis. de prioridad Alta sin OC generada se duplicarán en 10 días si mantienen el flujo actual, frenando mantenimiento de planta.', accion: 'Escalar a comité de compras las requis. Alta con >72h sin avance y pre-aprobar proveedores recurrentes.', confianza: 76 },
+            ]}/></div>
           </TabPanel>
 
           {/* OCs */}
@@ -163,6 +168,10 @@ export default function Compras() {
                 </tbody>
               </table>
             </div>
+            <div className="mt-5"><BrainPanel tema="ordenes-compra" insights={[
+              { tag: 'Riesgo', tone: 'danger', titulo: 'OCs en tránsito con ETA en riesgo', prediccion: 'Cerca del 30% de las OCs en tránsito superará su ETA estimada en ~6 días según el historial de retraso de sus proveedores, afectando reabasto de refacciones críticas.', accion: 'Confirmar embarque y fecha real con los proveedores de las OCs con ETA <7d y monto alto antes de 48h.', confianza: 79 },
+              { tag: 'Oportunidad', tone: 'info', titulo: 'Consolidación de OCs por proveedor', prediccion: 'Agrupar las OCs abiertas hacia los 3 proveedores recurrentes proyecta un ahorro de ~4-6% en flete y precio por volumen el próximo trimestre.', accion: 'Negociar OC marco mensual con los proveedores de mayor frecuencia en lugar de OCs individuales.', confianza: 73 },
+            ]}/></div>
           </TabPanel>
 
           {/* PROVEEDORES */}
@@ -211,6 +220,10 @@ export default function Compras() {
                 )
               })}
             </div>
+            <div className="mt-5"><BrainPanel tema="proveedores" insights={[
+              { tag: 'Tendencia', tone: 'warn', titulo: 'Caída de score en proveedor clave', prediccion: 'El proveedor con mayor spend YTD muestra calificación a la baja y NCs abiertas; de mantener la tendencia caería de "Aprobado" a revisión en ~2 meses, exponiendo el 40% del gasto.', accion: 'Abrir plan de acción correctivo y cotizar un proveedor alterno antes del próximo ciclo de OCs.', confianza: 78 },
+              { tag: 'Oportunidad', tone: 'ok', titulo: 'Diversificación de base de proveedores', prediccion: 'La concentración del spend en pocos proveedores aprobados eleva el riesgo de desabasto; homologar 2 proveedores secundarios reduciría el riesgo de continuidad ~25% en el semestre.', accion: 'Acelerar la evaluación documental de los proveedores en estado distinto a "Aprobado" con buena calificación.', confianza: 71 },
+            ]}/></div>
           </TabPanel>
 
           {/* INVENTARIO */}
@@ -223,14 +236,14 @@ export default function Compras() {
                   placeholder="Buscar SKU, producto o marca..."
                   value={busqInv}
                   onChange={e => setBusqInv(e.target.value)}
-                  className="w-full bg-white border border-kratos-border rounded-lg pl-10 pr-3 py-2 text-sm text-kratos-text placeholder:text-kratos-subtle focus:outline-none focus:border-kratos-red/50"
+                  className="w-full bg-white border border-kratos-border rounded-none pl-10 pr-3 py-2 text-sm text-kratos-text placeholder:text-kratos-subtle focus:outline-none focus:border-kratos-red/50"
                 />
               </div>
               <div className="flex gap-1 surface-2 p-1">
                 {['todos','Agotado','Crítico','Bajo','Mínimo','OK'].map(f => (
                   <button key={f}
                     onClick={() => setFiltroInv(f)}
-                    className={`px-2.5 py-1 rounded-md text-xs ${filtroInv === f ? 'bg-kratos-red text-white' : 'text-kratos-subtle hover:text-white'}`}>
+                    className={`px-2.5 py-1 rounded-none text-xs ${filtroInv === f ? 'bg-kratos-red text-white' : 'text-kratos-subtle hover:text-white'}`}>
                     {f === 'todos' ? 'Todos' : f}
                   </button>
                 ))}
@@ -270,6 +283,10 @@ export default function Compras() {
                 </tbody>
               </table>
             </div>
+            <div className="mt-5"><BrainPanel tema="inventario" insights={[
+              { tag: 'Alerta temprana', tone: 'danger', titulo: 'Quiebre de stock inminente en críticos', prediccion: `Hay ${criticos} SKUs en estado Crítico/Agotado; al consumo promedio actual los filtros y refacciones críticas se agotan en ~12-18 días, deteniendo mantenimiento programado.`, accion: 'Generar requisición urgente de reorden para los SKUs Crítico/Agotado con proveedor de menor ETA.', confianza: 84 },
+              { tag: 'Proyección', tone: 'warn', titulo: 'Punto de reorden mal calibrado', prediccion: 'Cerca del 20% de los SKUs cruzará su mínimo el próximo mes porque su punto de reorden no contempla el lead time real del proveedor, generando compras de emergencia más caras.', accion: 'Recalcular mínimos con AG de reorden predictivo usando lead time + consumo de los últimos 90 días.', confianza: 77 },
+            ]}/></div>
           </TabPanel>
 
           {/* INVENTARIO MUERTO */}
@@ -301,6 +318,10 @@ export default function Compras() {
               </table>
             </div>
             <div className="mt-3 text-[11px] text-kratos-subtle px-2">Capital congelado total: {fmtMXN(inventarioMuerto.reduce((s, i) => s + i.valor, 0))}</div>
+            <div className="mt-5"><BrainPanel tema="inventario-muerto" insights={[
+              { tag: 'Proyección', tone: 'danger', titulo: 'Capital congelado en aumento', prediccion: `El inventario muerto actual de ${fmtMXN(inventarioMuerto.reduce((s, i) => s + i.valor, 0))} crecerá ~12-15% para Q3 si los SKUs con +6 meses parados no se liquidan, sumando más capital ocioso.`, accion: 'Lanzar campaña de remate/devolución a proveedor para los SKUs con >12 meses sin movimiento este mes.', confianza: 82 },
+              { tag: 'Oportunidad', tone: 'info', titulo: 'Recuperación parcial vía devolución', prediccion: 'Una fracción de los SKUs obsoletos aún califica para devolución a proveedor o traspaso entre plantas, recuperando ~30-40% del valor antes de que pierdan garantía/vigencia.', accion: 'Priorizar gestión de devolución de los SKUs marcados "Devolver/Traspasar" antes de su fecha límite.', confianza: 70 },
+            ]}/></div>
           </TabPanel>
 
           {/* FORMATOS DE COMPRAS */}
@@ -317,6 +338,10 @@ export default function Compras() {
                 </div>
               ))}
             </div>
+            <div className="mt-5"><BrainPanel tema="formatos-compras" insights={[
+              { tag: 'Tendencia', tone: 'info', titulo: 'Demanda creciente de formatos clave', prediccion: 'El uso mensual de los formatos de requisición y OC mantiene tendencia al alza; de seguir así superarán su volumen de captura manual sostenible el próximo trimestre.', accion: 'Digitalizar y autollenar los 2 formatos de mayor uso/mes desde los datos de requisiciones para reducir captura manual.', confianza: 74 },
+              { tag: 'Oportunidad', tone: 'ok', titulo: 'Formatos subutilizados a depurar', prediccion: 'Varios formatos con bajo uso/mes anticipan obsolescencia documental; consolidarlos evitará versiones duplicadas y reprocesos en auditoría de compras.', accion: 'Revisar y unificar los formatos con menor uso mensual en la próxima actualización del catálogo documental.', confianza: 69 },
+            ]}/></div>
           </TabPanel>
 
         </Tabs>

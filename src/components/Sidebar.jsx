@@ -18,7 +18,7 @@ export default function Sidebar() {
           <img
             src="/logo-kratos-fp.png"
             alt="Kratos FP"
-            className="w-10 h-10 rounded-xl object-contain bg-white border border-kratos-border shadow-soft p-1"
+            className="w-10 h-10 rounded-none object-contain bg-white border border-kratos-border shadow-soft p-1"
           />
           <div className="leading-tight">
             <div className="font-display text-xl font-semibold text-kratos-ink tracking-tight">Kratos FP</div>
@@ -41,7 +41,7 @@ export default function Sidebar() {
                       to={m.path}
                       end={m.path === '/'}
                       className={({ isActive }) =>
-                        `group flex items-center gap-3 px-2.5 py-2.5 rounded-lg text-sm transition-colors ${
+                        `group flex items-center gap-3 px-2.5 py-2.5 rounded-none text-sm transition-colors ${
                           isBrain
                             ? 'bg-kratos-red text-white font-semibold shadow-soft hover:opacity-90'
                             : isActive
@@ -62,8 +62,8 @@ export default function Sidebar() {
 
       {/* User footer */}
       <div className="px-3 py-3 border-t border-kratos-border">
-        <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-kratos-bg2/70 transition-colors">
-          <span className="w-9 h-9 rounded-lg flex items-center justify-center font-display font-semibold text-white text-xs shrink-0" style={{ background: `linear-gradient(135deg, ${usuarios.ceo.color}, ${usuarios.ceo.color}AA)` }}>
+        <button className="w-full flex items-center gap-3 px-3 py-2 rounded-none hover:bg-kratos-bg2/70 transition-colors">
+          <span className="w-9 h-9 rounded-none flex items-center justify-center font-display font-semibold text-white text-xs shrink-0" style={{ background: `linear-gradient(135deg, ${usuarios.ceo.color}, ${usuarios.ceo.color}AA)` }}>
             {usuarios.ceo.avatar}
           </span>
           <div className="flex-1 min-w-0 text-left">

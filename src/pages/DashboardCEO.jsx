@@ -12,7 +12,7 @@ import {
 import KPILight from '../components/KPILight'
 import ProgressBar from '../components/ProgressBar'
 
-const tooltipCfg = { contentStyle: { background:'#FFFFFF', border:'1px solid #E5E3DC', borderRadius:10, fontSize:12 }, labelStyle:{ color:'#4A453F' } }
+const tooltipCfg = { contentStyle: { background:'#FFFFFF', border:'1px solid #E5E3DC', borderRadius:0, fontSize:12 }, labelStyle:{ color:'#4A453F' } }
 
 const HOY = new Date('2026-05-14')
 const fmtFechaLarga = (d) => d.toLocaleDateString('es-MX', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' }).replace(/ de /gi, ' ')
@@ -87,7 +87,7 @@ export default function DashboardCEO() {
   // ---- KPIs estratégicos de Finanzas (CEO) ----
   // CxC sale de datos reales; el resto son estimaciones (el mock no tiene valor de activos,
   // calendario de deuda ni exposición cambiaria detallada).
-  const rendimientoUnidad = 2.1   // % mensual = ingreso renta / valor del equipo
+  const rendimientoUnidad = 43   // % mensual = ingreso renta / valor del equipo
   const dsoDias           = 55    // días de cobranza
   const dioDias           = 10    // días de inventario (refacciones)
   const dpoDias           = 40    // días de pago a proveedores
@@ -120,7 +120,7 @@ export default function DashboardCEO() {
 
   // ---- Datos auxiliares para los desgloses (drill-down de cada KPI) ----
   const rentaMensualFlota = Math.round(rentabilidadGruas.reduce((s, g) => s + g.ingresoYTD, 0) / 5)
-  const valorFlotaEstim   = 132000000 // valor de adquisición estimado de la flota
+  const valorFlotaEstim   = Math.round(rentaMensualFlota / (rendimientoUnidad / 100)) // valor de flota implícito al rendimiento
   const servicioDeudaMes  = Math.round(ebitdaMes.ebitda / dscr)
   const docsVencer        = flota.gruas.filter(g => { const d = (new Date(g.docVence) - HOY) / 86400000; return d >= 0 && d < 30 })
   const flotaEnObra       = flota.gruas.filter(g => g.estado === 'En obra').length
@@ -218,7 +218,7 @@ export default function DashboardCEO() {
               <select
                 value={mesIdx}
                 onChange={(e) => setMesIdx(Number(e.target.value))}
-                className="appearance-none bg-kratos-panel-2 border border-kratos-border rounded-lg pl-4 pr-10 py-2.5 text-sm font-medium text-kratos-ink cursor-pointer hover:bg-white focus:outline-none focus:ring-2 focus:ring-kratos-border transition"
+                className="appearance-none bg-kratos-panel-2 border border-kratos-border rounded-none pl-4 pr-10 py-2.5 text-sm font-medium text-kratos-ink cursor-pointer hover:bg-white focus:outline-none focus:ring-2 focus:ring-kratos-border transition"
               >
                 {MESES.map((m, i) => <option key={m.key} value={i}>{m.label} 2026</option>)}
               </select>
@@ -279,7 +279,7 @@ export default function DashboardCEO() {
               <span className="label-mono">{sec.kpis.length} indicador{sec.kpis.length > 1 ? 'es' : ''}</span>
             </div>
             <div className={`grid grid-cols-2 md:grid-cols-3 ${sec.kpis.length >= 5 ? 'xl:grid-cols-5' : sec.kpis.length === 4 ? 'xl:grid-cols-4' : 'xl:grid-cols-' + sec.kpis.length} gap-3`}>
-              {sec.kpis.map((k, i) => <KPILight key={i} {...k}/>)}
+              {sec.kpis.map((k, i) => <KPILight key={i} {...k} to={k.to || sec.path} toLabel={k.toLabel || `Ver detalle en ${sec.label}`}/>)}
             </div>
           </section>
         )
@@ -440,7 +440,7 @@ function SemaforoCount({ label, value, color }) {
   }
   const s = styles[color]
   return (
-    <div className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl border ${s.bg} border-kratos-border`}>
+    <div className={`flex items-center gap-2.5 px-4 py-2.5 rounded-none border ${s.bg} border-kratos-border`}>
       <span className={`w-3 h-3 rounded-full ${s.dot}`}/>
       <div>
         <div className={`font-display text-2xl font-semibold leading-none tabular-nums ${s.text}`}>{value}</div>

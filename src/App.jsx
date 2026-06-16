@@ -3,6 +3,7 @@ import Layout from './components/Layout'
 import DashboardCEO from './pages/DashboardCEO'
 import KratosBrain from './pages/KratosBrain'
 import Finanzas from './pages/Finanzas'
+import CashflowFormato from './pages/CashflowFormato'
 import CRM from './pages/CRM'
 import Operaciones from './pages/Operaciones'
 import RRHH from './pages/RRHH'
@@ -17,6 +18,7 @@ export default function App() {
         <Route path="/"             element={<DashboardCEO />} />
         <Route path="/brain"        element={<KratosBrain />} />
         <Route path="/finanzas"     element={<Finanzas />} />
+        <Route path="/finanzas/formato-cashflow" element={<CashflowFormato />} />
         <Route path="/crm"          element={<CRM />} />
         <Route path="/operaciones"  element={<Operaciones />} />
         <Route path="/rrhh"         element={<RRHH />} />

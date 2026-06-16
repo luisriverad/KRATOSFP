@@ -1,11 +1,13 @@
 import { useState, useMemo } from 'react'
-import { Banknote, FileText, Calendar, ArrowUpRight, ArrowDownRight, AlertTriangle, Building2, ListChecks, Receipt, Landmark, ScrollText, CreditCard, ChevronRight, TrendingUp, TrendingDown, Bot, Users, Briefcase, ShieldCheck, BookOpen, FolderArchive, Activity, FileCheck, Sparkles, Search, BrainCircuit } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { Banknote, FileText, Calendar, ArrowUpRight, ArrowDownRight, AlertTriangle, Building2, ListChecks, Receipt, Landmark, ScrollText, CreditCard, ChevronRight, TrendingUp, TrendingDown, Bot, Users, Briefcase, ShieldCheck, BookOpen, FolderArchive, Activity, FileCheck, Sparkles, Search, BrainCircuit, FileSpreadsheet } from 'lucide-react'
 import { ResponsiveContainer, BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip, ComposedChart, Line, AreaChart, Area, Legend, Cell, ReferenceLine } from 'recharts'
 import PageHeader from '../components/PageHeader'
 import KPICard from '../components/KPICard'
 import ProgressBar from '../components/ProgressBar'
 import SortableTH from '../components/SortableTH'
 import { Tabs, TabsList, Tab, TabPanel } from '../components/Tabs'
+import BrainPanel from '../components/BrainPanel'
 import { finanzas, agentes, fmtMXN, usuarios, checklists } from '../data/mockData'
 import { centrosCosto } from '../data/personalData'
 import { controlCargas } from '../data/operacionesData'
@@ -13,13 +15,12 @@ import { lineasCredito, creditoResumen } from '../data/creditoData'
 import {
   cashflow13s, rentabilidadCliente, rentabilidadProyecto, alertasBancarias,
   analisisDeuda, scoreClientes, monitoreoRegulatorio, repositorioCorporativo,
-  matrizRiesgoFiscal, recomendacionesIA, scoreSaludFiscal, analisisPreventivo,
-  formatosFinancieros, bitacoraEjecutivaFiscal, facturacionCliente
+  matrizRiesgoFiscal, scoreSaludFiscal
 } from '../data/iaData'
 import { useSortable } from '../lib/useSortable'
 import { diasHasta } from '../lib/dates'
 
-const tooltip = { contentStyle: { background:'#FFFFFF', border:'1px solid #E5E3DC', borderRadius:10, fontSize:12 }, labelStyle:{ color:'#4A453F' } }
+const tooltip = { contentStyle: { background:'#FFFFFF', border:'1px solid #E5E3DC', borderRadius:0, fontSize:12 }, labelStyle:{ color:'#4A453F' } }
 
 // Rangos del semáforo de cartera vencida
 const RANGOS = [
@@ -188,15 +189,23 @@ export default function Finanzas() {
             <Tab style="underline" value="regula"   icon={BookOpen}     badge={monitoreoRegulatorio.length}>Regulatorio</Tab>
             <Tab style="underline" value="matriz"   icon={ShieldCheck}>Matriz fiscal</Tab>
             <Tab style="underline" value="repo"     icon={FolderArchive} badge={repositorioCorporativo.length}>Repositorio</Tab>
-            <Tab style="underline" value="reco"     icon={Sparkles}     badge={recomendacionesIA.length}>Recomendaciones IA</Tab>
-            <Tab style="underline" value="prev"     icon={Activity}>Análisis preventivo</Tab>
-            <Tab style="underline" value="formatos" icon={FileCheck}    badge={formatosFinancieros.length}>Formatos</Tab>
-            <Tab style="underline" value="bitfis"   icon={Bot}>Bitácora fiscal</Tab>
-            <Tab style="underline" value="facturas" icon={Receipt}     badge={facturacionCliente.length}>Facturación</Tab>
           </TabsList>
 
           {/* CASHFLOW */}
           <TabPanel value="cashflow" className="p-6 space-y-5">
+            {/* Acceso al formato completo de forecast cashflow */}
+            <Link to="/finanzas/formato-cashflow"
+              className="panel panel-hover p-4 flex items-center justify-between gap-4 group">
+              <div className="flex items-center gap-3">
+                <span className="w-9 h-9 grid place-items-center bg-kratos-info-soft text-kratos-info shrink-0"><FileSpreadsheet size={18}/></span>
+                <div>
+                  <div className="font-display font-semibold text-kratos-ink leading-tight">Ir a Formato Cashflow</div>
+                  <div className="text-[12px] text-kratos-muted">Forecast semanal completo · Pronóstico vs. Real por concepto</div>
+                </div>
+              </div>
+              <span className="btn-primary shrink-0 group-hover:bg-black">IR A FORMATO CASHFLOW <ChevronRight size={15}/></span>
+            </Link>
+
             {/* Cashflow centrado en la semana actual */}
             <div className="panel p-5">
               <div className="flex items-baseline justify-between mb-3">
@@ -227,7 +236,7 @@ export default function Finanzas() {
                 {cashflowVentana.map(s => {
                   const esActual = s.semana === SEMANA_ACTUAL
                   return (
-                    <div key={s.semana} className={`text-center py-2 rounded text-[10px] font-mono ${esActual ? 'ring-2 ring-kratos-info bg-kratos-info-soft text-kratos-info font-semibold' : s.tension === 'alta' ? 'bg-kratos-danger-soft text-kratos-danger' : s.tension === 'media' ? 'bg-kratos-warn-soft text-kratos-warn' : 'bg-kratos-ok-soft text-kratos-ok'}`}>
+                    <div key={s.semana} className={`text-center py-2 rounded-none text-[10px] font-mono ${esActual ? 'ring-2 ring-kratos-info bg-kratos-info-soft text-kratos-info font-semibold' : s.tension === 'alta' ? 'bg-kratos-danger-soft text-kratos-danger' : s.tension === 'media' ? 'bg-kratos-warn-soft text-kratos-warn' : 'bg-kratos-ok-soft text-kratos-ok'}`}>
                       {s.semana}{esActual ? ' · hoy' : ''}
                     </div>
                   )
@@ -251,6 +260,10 @@ export default function Finanzas() {
                 <div className="text-[11px] text-kratos-muted mt-1">Mayo 2026</div>
               </div>
             </div>
+            <div className="mt-5"><BrainPanel tema="flujo de caja semanal proyectado" insights={[
+              { tag: 'Proyección', tone: 'warn', titulo: 'Caja toca piso en 3 semanas', prediccion: 'Con el patrón actual de entradas vs. salidas, en la semana S27 la caja proyectada cae a ~$1.1M, su nivel más bajo del trimestre, por la concentración de salidas en semanas de tensión alta.', accion: 'Adelantar 2 cobranzas de mayo y diferir pagos no críticos a S28.', confianza: 81 },
+              { tag: 'Oportunidad', tone: 'info', titulo: 'Ingreso pendiente recuperable', prediccion: `Si se factura el ingreso pendiente (${fmtMXN(ingresoPendiente)} sin OC) en las próximas 2 semanas, el saldo proyectado de S26–S27 sube ~18% y elimina la zona de tensión.`, accion: 'Gestionar OC con clientes pendientes antes del cierre de mes.', confianza: 76 },
+            ]}/></div>
           </TabPanel>
 
           {/* LÍNEAS DE CRÉDITO */}
@@ -369,6 +382,10 @@ export default function Finanzas() {
                 </div>
               )
             })()}
+            <div className="mt-5"><BrainPanel tema="líneas de crédito y utilización" insights={[
+              { tag: 'Tendencia', tone: 'warn', titulo: 'Utilización rumbo al 78%', prediccion: `La utilización global de líneas pasa de ${credito.utilizacion}% hoy a ~78% para finales de junio si se mantiene el ritmo de disposiciones para capital de trabajo, dejando solo ${fmtMXN(credito.disponible)} de colchón.`, accion: 'Amortizar capital en semanas de holgura y reservar disponibilidad para imprevistos.', confianza: 79 },
+              { tag: 'Riesgo', tone: 'danger', titulo: 'Línea cara presionando margen', prediccion: 'Las líneas con tasa más alta concentrarán el costo financiero: en 60 días los intereses devengados suben ~12% si no se migra saldo a la línea de menor tasa disponible.', accion: 'Reestructurar dispuesto hacia la línea de tasa más baja y renegociar al bajar la utilización.', confianza: 73 },
+            ]}/></div>
           </TabPanel>
 
           {/* BANCOS */}
@@ -389,6 +406,10 @@ export default function Finanzas() {
                 </div>
               ))}
             </div>
+            <div className="mt-5"><BrainPanel tema="saldos bancarios y concentración" insights={[
+              { tag: 'Riesgo', tone: 'warn', titulo: 'Concentración bancaria alta', prediccion: `Más del 60% de los ${fmtMXN(saldoTotal)} en caja se concentra en un solo banco; ante un bloqueo o falla de servicio, la operación quedaría sin liquidez inmediata por 2–3 días hábiles.`, accion: 'Repartir nómina y proveedores entre 2 instituciones para junio.', confianza: 77 },
+              { tag: 'Proyección', tone: 'info', titulo: 'Excedente improductivo', prediccion: 'Las cuentas operativas mantienen saldos por encima de su mínimo necesario; en 30 días ese excedente representará un costo de oportunidad de ~$15–20K en rendimientos no captados.', accion: 'Barrer el excedente a inversión overnight o pagaré a la vista.', confianza: 71 },
+            ]}/></div>
           </TabPanel>
 
           {/* CXC */}
@@ -407,7 +428,7 @@ export default function Finanzas() {
               </div>
 
               {/* Barra apilada */}
-              <div className="flex h-5 rounded-md overflow-hidden border border-kratos-border mb-5">
+              <div className="flex h-5 rounded-none overflow-hidden border border-kratos-border mb-5">
                 {carteraBuckets.filter(b => b.monto > 0).map(b => (
                   <button key={b.key} onClick={() => setRangoSel(rangoSel === b.key ? null : b.key)}
                     title={`${b.label}: ${fmtMXN(b.monto)}`}
@@ -423,8 +444,7 @@ export default function Finanzas() {
                   const active = rangoSel === b.key
                   return (
                     <button key={b.key} onClick={() => setRangoSel(active ? null : b.key)}
-                      className={`text-left surface-2 p-4 rounded-xl border-l-4 transition ${active ? 'ring-2 ring-offset-1 ring-kratos-ink/30' : 'hover:bg-kratos-panel-2'}`}
-                      style={{ borderLeftColor: b.color }}>
+                      className={`text-left surface-2 p-4 transition ${active ? 'ring-2 ring-offset-1 ring-kratos-ink/30' : 'hover:bg-kratos-panel-2'}`}>
                       <div className="flex items-center gap-2 mb-1.5">
                         <span className="w-2 h-2 rounded-full shrink-0" style={{ background: b.color }}/>
                         <span className="text-[13px] font-semibold text-kratos-ink leading-tight">{b.label}</span>
@@ -448,7 +468,7 @@ export default function Finanzas() {
                   <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-kratos-muted pointer-events-none"/>
                   <input value={cxcQuery} onChange={(e) => setCxcQuery(e.target.value)}
                     placeholder="Buscar por cliente o contrato (OC)…"
-                    className="w-full pl-10 pr-4 py-2.5 bg-kratos-panel-2 border border-kratos-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-kratos-border"/>
+                    className="w-full pl-10 pr-4 py-2.5 bg-kratos-panel-2 border border-kratos-border rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-kratos-border"/>
                 </div>
                 {rangoSel && (
                   <button onClick={() => setRangoSel(null)} className="text-[12px] text-kratos-muted hover:text-kratos-ink flex items-center gap-1.5">
@@ -483,6 +503,10 @@ export default function Finanzas() {
                 </table>
               </div>
             </div>
+            <div className="mt-5"><BrainPanel tema="cartera por cobrar y mora" insights={[
+              { tag: 'Alerta temprana', tone: 'danger', titulo: 'Mora migrando a +90 días', prediccion: `De la mora actual (${fmtMXN(moraTotal)}), ~$${(moraTotal*0.22/1e6).toFixed(1)}M en el bucket 61–90d cruzará a +90 días en las próximas 4 semanas, entrando en zona de riesgo legal y mayor probabilidad de incobrabilidad.`, accion: 'Escalar gestión intensiva sobre los contratos 61–90d antes de su corte.', confianza: 80 },
+              { tag: 'Proyección', tone: 'warn', titulo: 'Cobranza concentrada en pocos clientes', prediccion: 'Más del 50% de la cartera vencida se concentra en 2–3 clientes; si su patrón de pago no mejora, el DSO promedio subirá ~6 días para fin de mes y tensará la caja de S27.', accion: 'Acuerdo de pago calendarizado con los clientes de mayor saldo vencido.', confianza: 75 },
+            ]}/></div>
           </TabPanel>
 
           {/* CXP */}
@@ -527,6 +551,10 @@ export default function Finanzas() {
                 </tbody>
               </table>
             </div>
+            <div className="mt-5"><BrainPanel tema="cuentas por pagar a proveedores" insights={[
+              { tag: 'Riesgo', tone: 'danger', titulo: 'Vencidas erosionando relación', prediccion: `Los ${fmtMXN(cxpVencidas)} ya vencidos crecerán ~$${(cxpProximas/1e6).toFixed(1)}M en 7 días al sumarse las próximas a vencer; el riesgo es suspensión de crédito de proveedores clave a partir de julio.`, accion: 'Priorizar pago de proveedores estratégicos y negociar prórroga en los no críticos.', confianza: 78 },
+              { tag: 'Oportunidad', tone: 'info', titulo: 'Ventana de pronto pago', prediccion: 'Adelantar pagos en semanas de holgura de caja capturaría descuentos por pronto pago estimados en ~2–3% del monto, equivalente a un ahorro mensual de ~$25–40K.', accion: 'Negociar descuento por pronto pago con proveedores recurrentes.', confianza: 70 },
+            ]}/></div>
           </TabPanel>
 
           {/* FISCAL */}
@@ -543,6 +571,10 @@ export default function Finanzas() {
                 </div>
               ))}
             </div>
+            <div className="mt-5"><BrainPanel tema="cumplimiento fiscal y obligaciones" insights={[
+              { tag: 'Alerta temprana', tone: 'warn', titulo: 'Obligaciones por vencer en cascada', prediccion: 'Varias obligaciones fuera de estado "Al día" vencen dentro de las próximas 3 semanas; sin avance, al menos 1 caerá en extemporaneidad generando actualización y recargos estimados en ~$30–50K.', accion: 'Asignar responsable y fecha de cierre a cada obligación en curso esta semana.', confianza: 82 },
+              { tag: 'Riesgo', tone: 'danger', titulo: 'Riesgo de opinión negativa SAT', prediccion: 'Si las obligaciones pendientes no se regularizan antes de su corte, la opinión de cumplimiento 32-D podría pasar a negativa el próximo mes, bloqueando licitaciones y crédito bancario.', accion: 'Regularizar declaraciones pendientes antes del corte mensual del SAT.', confianza: 76 },
+            ]}/></div>
           </TabPanel>
 
           {/* ALERTAS BANCARIAS */}
@@ -625,13 +657,13 @@ export default function Finanzas() {
             {/* Análisis por Kratos FP Brain */}
             {!showAnalisisBancos ? (
               <button onClick={() => setShowAnalisisBancos(true)}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl bg-kratos-ink text-white text-sm font-semibold hover:opacity-90 transition">
+                className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-none bg-kratos-ink text-white text-sm font-semibold hover:opacity-90 transition">
                 <BrainCircuit size={18}/> Análisis por Kratos FP Brain
               </button>
             ) : (
               <div className="space-y-3">
                 <div className="flex items-center gap-2.5">
-                  <span className="w-9 h-9 rounded-lg bg-kratos-ink text-white flex items-center justify-center shrink-0"><BrainCircuit size={17}/></span>
+                  <span className="w-9 h-9 rounded-none bg-kratos-ink text-white flex items-center justify-center shrink-0"><BrainCircuit size={17}/></span>
                   <div>
                     <h3 className="font-display text-base font-semibold text-kratos-ink leading-tight">Análisis por Kratos FP Brain</h3>
                     <p className="text-[12px] text-kratos-muted">Recomendaciones y planes de trabajo sobre las alertas bancarias</p>
@@ -700,6 +732,10 @@ export default function Finanzas() {
                 </ResponsiveContainer>
               </div>
             </div>
+            <div className="mt-5"><BrainPanel tema="análisis de deuda y cobertura DSCR" insights={[
+              { tag: 'Proyección', tone: analisisDeuda.dscr >= 1.25 ? 'warn' : 'danger', titulo: 'DSCR acercándose al mínimo', prediccion: `Con el DSCR actual de ${analisisDeuda.dscr}, la trayectoria mensual proyecta tocar el umbral de 1.25 en 2–3 meses si los intereses suben con la mayor utilización de líneas, activando posibles covenants con el banco.`, accion: 'Suavizar el calendario de amortización y vigilar el DSCR mes a mes.', confianza: 79 },
+              { tag: 'Riesgo', tone: analisisDeuda.apalancamiento <= 0.6 ? 'info' : 'warn', titulo: 'Apalancamiento bajo presión', prediccion: `El apalancamiento de ${(analisisDeuda.apalancamiento*100).toFixed(0)}% subirá ~4–6 pts en el trimestre si se dispone más deuda para capital de trabajo, reduciendo capacidad de nueva financiación en el segundo semestre.`, accion: 'Financiar capital de trabajo con cobranza acelerada antes que con más deuda.', confianza: 72 },
+            ]}/></div>
           </TabPanel>
 
           {/* SCORE CLIENTE */}
@@ -733,6 +769,10 @@ export default function Finanzas() {
                 </tbody>
               </table>
             </div>
+            <div className="mt-5"><BrainPanel tema="score crediticio de clientes" insights={[
+              { tag: 'Alerta temprana', tone: 'danger', titulo: 'Clientes de riesgo alto deteriorándose', prediccion: 'Los clientes con score <60 y desgaste de flujo alto tienden a ampliar sus plazos: en 30–45 días su comportamiento de pago empeorará y aportarán el grueso de la nueva mora.', accion: 'Reducir exposición y exigir anticipo o garantía a los clientes de riesgo alto.', confianza: 80 },
+              { tag: 'Oportunidad', tone: 'ok', titulo: 'Clientes premium para crecer', prediccion: 'Los clientes con score ≥75 y velocidad de pago rápida sostendrán su buen comportamiento; ampliar línea con ellos en el próximo trimestre eleva ingresos con riesgo de mora marginal.', accion: 'Ofrecer mayor línea y condiciones preferentes a los clientes de score alto.', confianza: 74 },
+            ]}/></div>
           </TabPanel>
 
           {/* MONITOREO REGULATORIO */}
@@ -773,6 +813,10 @@ export default function Finanzas() {
                 </tbody>
               </table>
             </div>
+            <div className="mt-5"><BrainPanel tema="monitoreo de cambios regulatorios" insights={[
+              { tag: 'Alerta temprana', tone: 'danger', titulo: 'Cambios de alto impacto sin atender', prediccion: `De los ${monitoreoRegulatorio.length} cambios detectados, los de impacto alto requieren acción antes de su entrada en vigor; sin avance en 2–4 semanas el riesgo es incumplimiento o multa al activarse la nueva norma.`, accion: 'Asignar responsable a cada cambio de impacto alto y fijar fecha límite.', confianza: 81 },
+              { tag: 'Proyección', tone: 'warn', titulo: 'Carga regulatoria concentrada en SAT/IMSS', prediccion: 'La mayoría de cambios provienen de SAT e IMSS; el próximo mes concentrará ajustes de obligaciones que demandarán ~2 semanas de adecuación en sistemas y procesos de nómina.', accion: 'Planear sprint de adecuación para las fuentes con más cambios.', confianza: 70 },
+            ]}/></div>
           </TabPanel>
 
           {/* MATRIZ DE RIESGO FISCAL */}
@@ -814,7 +858,7 @@ export default function Finanzas() {
                         }
                       </td>
                       <td className="table-td">
-                        <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-md text-xs font-medium ${m.color === 'verde' ? 'bg-kratos-ok-soft text-kratos-ok' : m.color === 'amarillo' ? 'bg-kratos-warn-soft text-kratos-warn' : 'bg-kratos-danger-soft text-kratos-danger'}`}>
+                        <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-none text-xs font-medium ${m.color === 'verde' ? 'bg-kratos-ok-soft text-kratos-ok' : m.color === 'amarillo' ? 'bg-kratos-warn-soft text-kratos-warn' : 'bg-kratos-danger-soft text-kratos-danger'}`}>
                           <span className={`w-2 h-2 rounded-full ${m.color === 'verde' ? 'bg-kratos-ok' : m.color === 'amarillo' ? 'bg-kratos-warn' : 'bg-kratos-danger'}`}/>
                           {m.color === 'verde' ? 'Cumplimiento' : m.color === 'amarillo' ? 'Preventivo' : 'Crítico'}
                         </span>
@@ -824,6 +868,10 @@ export default function Finanzas() {
                 </tbody>
               </table>
             </div>
+            <div className="mt-5"><BrainPanel tema="matriz de riesgo fiscal por área" insights={[
+              { tag: 'Riesgo', tone: 'danger', titulo: 'Áreas en rojo escalando', prediccion: 'Las áreas con cumplimiento <75% y riesgos en nivel rojo tienden a empeorar sin intervención: en 1–2 meses pueden detonar una observación formal o crédito fiscal en la siguiente revisión.', accion: 'Plan de remediación inmediato sobre las áreas marcadas como críticas.', confianza: 80 },
+              { tag: 'Proyección', tone: 'warn', titulo: 'Salud fiscal global a la baja', prediccion: 'El promedio de score de salud fiscal cederá ~3–5 pts el próximo trimestre si los riesgos amarillos no se cierran, acercando varias áreas al umbral preventivo.', accion: 'Cerrar los riesgos preventivos antes de que migren a críticos.', confianza: 73 },
+            ]}/></div>
           </TabPanel>
 
           {/* REPOSITORIO CORPORATIVO */}
@@ -853,122 +901,10 @@ export default function Finanzas() {
             <div className="mt-3 text-[11px] text-kratos-subtle px-2">
               Actualización automática mensual: CSF, opiniones SAT/IMSS/INFONAVIT, certificados, e.firma, sellos digitales
             </div>
-          </TabPanel>
-
-          {/* RECOMENDACIONES IA */}
-          <TabPanel value="reco" className="p-6 space-y-3">
-            {recomendacionesIA.map((r, i) => (
-              <div key={i} className={`panel p-5 border-l-4 ${r.prioridad === 'alta' ? 'border-l-kratos-danger' : 'border-l-kratos-warn'}`}>
-                <div className="flex items-baseline gap-2 mb-2 flex-wrap">
-                  <span className={`chip-${r.tipo === 'fiscal' ? 'info' : r.tipo === 'corporativa' ? 'purple' : 'ok'}`}>{r.tipo}</span>
-                  <span className={r.prioridad === 'alta' ? 'chip-danger' : 'chip-warn'}>{r.prioridad}</span>
-                  {r.impacto > 0 && <span className="ml-auto font-mono text-sm text-kratos-ok">{fmtMXN(r.impacto)} impacto</span>}
-                </div>
-                <div className="text-sm text-kratos-ink font-semibold">{r.titulo}</div>
-                <p className="text-[13px] text-kratos-subtle mt-1">{r.detalle}</p>
-              </div>
-            ))}
-          </TabPanel>
-
-          {/* ANÁLISIS PREVENTIVO */}
-          <TabPanel value="prev" className="p-6">
-            <div className="surface-2 overflow-hidden">
-              <table className="w-full">
-                <thead><tr>
-                  <th className="table-th">Operación</th>
-                  <th className="table-th">Tipo</th>
-                  <th className="table-th">Impacto fiscal</th>
-                  <th className="table-th">Impacto legal</th>
-                  <th className="table-th">Impacto financiero</th>
-                  <th className="table-th">Riesgo</th>
-                  <th className="table-th">Recomendación IA</th>
-                </tr></thead>
-                <tbody>
-                  {analisisPreventivo.map((a, i) => (
-                    <tr key={i} className="table-row">
-                      <td className="table-td font-medium">{a.operacion}</td>
-                      <td className="table-td text-sm text-kratos-subtle">{a.tipo}</td>
-                      <td className="table-td text-xs">{a.impactoFiscal}</td>
-                      <td className="table-td text-xs">{a.impactoLegal}</td>
-                      <td className="table-td text-xs">{a.impactoFinanciero}</td>
-                      <td className="table-td"><span className={a.riesgo === 'alto' ? 'chip-danger' : a.riesgo === 'medio' ? 'chip-warn' : 'chip-ok'}>{a.riesgo}</span></td>
-                      <td className="table-td text-xs font-medium">{a.recomienda}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </TabPanel>
-
-          {/* FORMATOS FINANCIEROS */}
-          <TabPanel value="formatos" className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
-              {formatosFinancieros.map(f => (
-                <div key={f.id} className="panel p-5">
-                  <div className="flex items-baseline justify-between mb-2">
-                    <span className="label-mono">{f.id}</span>
-                    <span className="chip-info">{f.usadoMes}/mes</span>
-                  </div>
-                  <div className="text-sm text-kratos-ink font-semibold">{f.titulo}</div>
-                  <p className="text-[12px] text-kratos-subtle mt-2">{f.descripcion}</p>
-                  <div className="text-[11px] text-kratos-ok mt-3">Ahorra ~{f.ahorroH} h/mes</div>
-                </div>
-              ))}
-            </div>
-          </TabPanel>
-
-          {/* BITÁCORA EJECUTIVA FISCAL */}
-          <TabPanel value="bitfis" className="p-6 space-y-4">
-            <div className="panel p-6">
-              <div className="flex items-baseline justify-between mb-3">
-                <h3 className="font-display text-xl font-semibold text-kratos-ink">Bitácora ejecutiva fiscal · {bitacoraEjecutivaFiscal.semana}</h3>
-                <span className="label-mono">Resumen semanal Dirección</span>
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
-                <div className="surface-2 p-3"><div className="label-mono">Cambios regulat.</div><div className="font-display text-2xl mt-1">{bitacoraEjecutivaFiscal.cambiosRegulatorios}</div></div>
-                <div className="surface-2 p-3"><div className="label-mono">Riesgos activos</div><div className="font-display text-2xl mt-1 text-kratos-warn">{bitacoraEjecutivaFiscal.riesgosActivos}</div></div>
-                <div className="surface-2 p-3"><div className="label-mono">Alertas</div><div className="font-display text-2xl mt-1 text-kratos-danger">{bitacoraEjecutivaFiscal.alertas}</div></div>
-                <div className="surface-2 p-3"><div className="label-mono">Oportunidades</div><div className="font-display text-2xl mt-1 text-kratos-ok">{bitacoraEjecutivaFiscal.oportunidades}</div></div>
-                <div className="surface-2 p-3"><div className="label-mono">Pendientes</div><div className="font-display text-2xl mt-1">{bitacoraEjecutivaFiscal.pendientes}</div></div>
-                <div className="surface-2 p-3"><div className="label-mono">Estrategias</div><div className="font-display text-2xl mt-1 text-kratos-info">{bitacoraEjecutivaFiscal.estrategiasSugeridas}</div></div>
-              </div>
-              <div className="mt-4 p-4 surface-2">
-                <div className="label-mono mb-1">Impacto estimado total</div>
-                <div className="font-display text-3xl font-semibold text-kratos-ok">{fmtMXN(bitacoraEjecutivaFiscal.impactoEstimado)}</div>
-              </div>
-              <div className="mt-4">
-                <h4 className="section-title text-sm mb-2">Resumen IA</h4>
-                <p className="text-sm text-kratos-subtle leading-relaxed">{bitacoraEjecutivaFiscal.resumen}</p>
-              </div>
-            </div>
-          </TabPanel>
-
-          {/* CONTROL FACTURAS POR CLIENTE */}
-          <TabPanel value="facturas" className="p-6">
-            <div className="surface-2 overflow-hidden">
-              <table className="w-full">
-                <thead><tr>
-                  <th className="table-th">Cliente</th>
-                  <th className="table-th text-right">Facturas YTD</th>
-                  <th className="table-th text-right">Monto YTD</th>
-                  <th className="table-th">Última factura</th>
-                  <th className="table-th">Vencidas</th>
-                  <th className="table-th text-right">Vigentes (saldo)</th>
-                </tr></thead>
-                <tbody>
-                  {facturacionCliente.map(f => (
-                    <tr key={f.cliente} className="table-row">
-                      <td className="table-td font-medium">{f.cliente}</td>
-                      <td className="table-td text-right font-mono">{f.facturas}</td>
-                      <td className="table-td text-right font-mono">{fmtMXN(f.montoYTD)}</td>
-                      <td className="table-td font-mono text-xs">{f.ultima}</td>
-                      <td className="table-td"><span className={f.vencidas === 0 ? 'chip-ok' : 'chip-danger'}>{f.vencidas}</span></td>
-                      <td className="table-td text-right font-mono">{fmtMXN(f.vigentes)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <div className="mt-5"><BrainPanel tema="repositorio documental corporativo" insights={[
+              { tag: 'Alerta temprana', tone: 'warn', titulo: 'Documentos próximos a vencer', prediccion: `De los ${repositorioCorporativo.length} documentos, los marcados como "próximo" caducan en las siguientes semanas; sin renovación, e.firma o sellos digitales vencidos detendrían facturación y trámites en cuestión de días.`, accion: 'Renovar con anticipación los documentos en estado próximo a vencer.', confianza: 83 },
+              { tag: 'Riesgo', tone: 'danger', titulo: 'Vencidos bloqueando operación', prediccion: 'Los documentos ya en estado vencido representan riesgo operativo inmediato: certificados o constancias caducadas pueden invalidar CFDIs y frenar pagos de clientes en la próxima quincena.', accion: 'Regularizar de inmediato cualquier documento en estado vencido.', confianza: 78 },
+            ]}/></div>
           </TabPanel>
         </Tabs>
       </div>

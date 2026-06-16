@@ -44,7 +44,7 @@ export default function Drawer({ open, onClose, title, subtitle, kicker, badges 
             {actions}
             <button
               onClick={onClose}
-              className="p-2 rounded-lg text-kratos-muted hover:text-kratos-ink hover:bg-kratos-bg2 transition-colors"
+              className="p-2 rounded-none text-kratos-muted hover:text-kratos-ink hover:bg-kratos-bg2 transition-colors"
               aria-label="Cerrar"
             >
               <X size={18} />

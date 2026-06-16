@@ -67,7 +67,7 @@ export default function Agentes() {
         <div className="panel">
           <header className="px-6 py-5 border-b border-kratos-border flex items-start justify-between gap-3">
             <div className="flex items-start gap-3">
-              <div className="w-11 h-11 rounded-xl bg-kratos-red-soft border border-kratos-red/20 flex items-center justify-center text-kratos-red shrink-0">
+              <div className="w-11 h-11 rounded-none bg-kratos-red-soft border border-kratos-red/20 flex items-center justify-center text-kratos-red shrink-0">
                 <Bot size={20}/>
               </div>
               <div>
@@ -91,9 +91,9 @@ export default function Agentes() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
                 <button onClick={() => setModo('todos')}
-                  className={`text-left rounded-xl border p-4 transition-all ${modo === 'todos' ? 'border-kratos-ink bg-kratos-bg2' : 'border-kratos-border bg-white hover:border-kratos-border-2'}`}>
+                  className={`text-left rounded-none border p-4 transition-all ${modo === 'todos' ? 'border-kratos-ink bg-kratos-bg2' : 'border-kratos-border bg-white hover:border-kratos-border-2'}`}>
                   <div className="flex items-center gap-2.5 mb-2">
-                    <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${modo === 'todos' ? 'bg-kratos-ink text-white' : 'bg-kratos-bg2 text-kratos-subtle'}`}>
+                    <div className={`w-9 h-9 rounded-none flex items-center justify-center ${modo === 'todos' ? 'bg-kratos-ink text-white' : 'bg-kratos-bg2 text-kratos-subtle'}`}>
                       <Users size={16}/>
                     </div>
                     <div className="font-medium text-sm text-kratos-ink">Todos los clientes con CXC</div>
@@ -101,9 +101,9 @@ export default function Agentes() {
                   <p className="text-[12px] text-kratos-muted leading-snug">Aplica a cualquier cliente con factura pendiente que cumpla el filtro de monto.</p>
                 </button>
                 <button onClick={() => setModo('seleccion')}
-                  className={`text-left rounded-xl border p-4 transition-all ${modo === 'seleccion' ? 'border-kratos-ink bg-kratos-bg2' : 'border-kratos-border bg-white hover:border-kratos-border-2'}`}>
+                  className={`text-left rounded-none border p-4 transition-all ${modo === 'seleccion' ? 'border-kratos-ink bg-kratos-bg2' : 'border-kratos-border bg-white hover:border-kratos-border-2'}`}>
                   <div className="flex items-center gap-2.5 mb-2">
-                    <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${modo === 'seleccion' ? 'bg-kratos-ink text-white' : 'bg-kratos-bg2 text-kratos-subtle'}`}>
+                    <div className={`w-9 h-9 rounded-none flex items-center justify-center ${modo === 'seleccion' ? 'bg-kratos-ink text-white' : 'bg-kratos-bg2 text-kratos-subtle'}`}>
                       <User size={16}/>
                     </div>
                     <div className="font-medium text-sm text-kratos-ink">Selección específica</div>
@@ -113,7 +113,7 @@ export default function Agentes() {
               </div>
 
               {modo === 'seleccion' && (
-                <div className="rounded-xl border border-kratos-border bg-white overflow-hidden">
+                <div className="rounded-none border border-kratos-border bg-white overflow-hidden">
                   <div className="px-4 py-2.5 bg-kratos-panel-2 border-b border-kratos-border flex items-center justify-between">
                     <span className="text-[12px] text-kratos-subtle">Clientes con CXC</span>
                     <span className="font-mono text-[11px] text-kratos-muted">{seleccion.length} seleccionado(s)</span>
@@ -125,7 +125,7 @@ export default function Agentes() {
                         <li key={c.cliente}>
                           <button onClick={() => toggleCliente(c.cliente)}
                             className="w-full flex items-center gap-3 px-4 py-3 hover:bg-kratos-bg2/60 transition-colors text-left">
-                            <span className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 ${sel ? 'bg-kratos-ink border-kratos-ink' : 'border-kratos-border-2 bg-white'}`}>
+                            <span className={`w-5 h-5 rounded-none border flex items-center justify-center shrink-0 ${sel ? 'bg-kratos-ink border-kratos-ink' : 'border-kratos-border-2 bg-white'}`}>
                               {sel && <Check size={12} className="text-white"/>}
                             </span>
                             <Building2 size={14} className="text-kratos-muted shrink-0"/>
@@ -154,9 +154,9 @@ export default function Agentes() {
                   const sel = canal === c.id
                   return (
                     <button key={c.id} onClick={() => setCanal(c.id)}
-                      className={`text-left rounded-xl border p-4 transition-all ${sel ? 'border-kratos-ink bg-kratos-bg2' : 'border-kratos-border bg-white hover:border-kratos-border-2'}`}>
+                      className={`text-left rounded-none border p-4 transition-all ${sel ? 'border-kratos-ink bg-kratos-bg2' : 'border-kratos-border bg-white hover:border-kratos-border-2'}`}>
                       <div className="flex items-center gap-2.5 mb-2">
-                        <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${sel ? 'bg-kratos-ink text-white' : 'bg-kratos-bg2 text-kratos-subtle'}`}>
+                        <div className={`w-9 h-9 rounded-none flex items-center justify-center shrink-0 ${sel ? 'bg-kratos-ink text-white' : 'bg-kratos-bg2 text-kratos-subtle'}`}>
                           <Icon size={16}/>
                         </div>
                         <div className="font-medium text-sm text-kratos-ink truncate">{c.label}</div>
@@ -177,7 +177,7 @@ export default function Agentes() {
               <div className="grid grid-cols-3 gap-2 mb-3">
                 {Object.keys(PLANTILLAS).map(t => (
                   <button key={t} onClick={() => setPlantilla(t)}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium capitalize transition-all border
+                    className={`px-3 py-2 rounded-none text-sm font-medium capitalize transition-all border
                       ${plantilla === t ? 'bg-kratos-ink text-white border-kratos-ink' : 'bg-white text-kratos-subtle border-kratos-border hover:border-kratos-border-2'}`}>
                     Tono {t}
                   </button>
@@ -203,7 +203,7 @@ export default function Agentes() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <Stepper label="Días antes del vencimiento" hint="Aviso preventivo" value={diasAntes} setValue={setDiasAntes}/>
                 <Stepper label="Días después si no paga"     hint="Recordatorio de morosidad" value={diasDespues} setValue={setDiasDespues}/>
-                <div className="rounded-xl border border-kratos-border p-4 bg-white">
+                <div className="rounded-none border border-kratos-border p-4 bg-white">
                   <label className="label-mono">Hora del envío</label>
                   <div className="flex items-center gap-2 mt-3">
                     <Clock size={16} className="text-kratos-muted shrink-0"/>
@@ -224,7 +224,7 @@ export default function Agentes() {
                   <h4 className="section-title text-sm">5. ¿Filtrar por monto?</h4>
                   <span className="label-mono">Umbral</span>
                 </div>
-                <div className="rounded-xl border border-kratos-border p-4 bg-white">
+                <div className="rounded-none border border-kratos-border p-4 bg-white">
                   <label className="label-mono">Monto mínimo de factura</label>
                   <input type="range" min="0" max="500000" step="10000" value={montoMin}
                     onChange={e => setMontoMin(Number(e.target.value))} className="w-full mt-3"/>
@@ -258,8 +258,8 @@ export default function Agentes() {
             <div className="p-5 bg-kratos-bg2/40">
               <div className="mx-auto" style={{ maxWidth: 300 }}>
                 {/* Carcasa del teléfono */}
-                <div className="rounded-[2.2rem] bg-gray-900 p-2.5 shadow-2xl">
-                  <div className="rounded-[1.7rem] overflow-hidden bg-white">
+                <div className="rounded-none bg-gray-900 p-2.5 shadow-2xl">
+                  <div className="rounded-none overflow-hidden bg-white">
                     {/* Barra de estado */}
                     <div className={`flex items-center justify-between px-4 pt-2 pb-1 text-[10px] font-semibold ${canal === 'wa' ? 'bg-[#075E54] text-white' : 'bg-white text-gray-700'}`}>
                       <span>{hora}</span>
@@ -280,9 +280,9 @@ export default function Agentes() {
                         </div>
                         <div className="px-3 py-4 min-h-[280px]" style={{ background: '#ECE5DD' }}>
                           <div className="flex justify-center mb-3">
-                            <span className="bg-[#FCF5DB] text-[10px] text-gray-600 px-2.5 py-1 rounded-md shadow-sm">HOY</span>
+                            <span className="bg-[#FCF5DB] text-[10px] text-gray-600 px-2.5 py-1 rounded-none shadow-sm">HOY</span>
                           </div>
-                          <div className="bg-white rounded-lg rounded-tl-none px-3 py-2 max-w-[88%] shadow-sm">
+                          <div className="bg-white rounded-none rounded-tl-none px-3 py-2 max-w-[88%] shadow-sm">
                             <p className="text-[13px] text-gray-800 leading-snug">{mensaje}</p>
                             <div className="text-[10px] text-gray-400 text-right mt-1">{hora}</div>
                           </div>
@@ -299,7 +299,7 @@ export default function Agentes() {
                         </div>
                         <div className="px-3 py-4 min-h-[280px] bg-white">
                           <div className="text-center text-[10px] text-gray-400 mb-3">Mensaje de texto · {hora}</div>
-                          <div className="bg-gray-200 text-gray-800 rounded-2xl rounded-bl-md px-3.5 py-2 max-w-[85%]">
+                          <div className="bg-gray-200 text-gray-800 rounded-none rounded-none px-3.5 py-2 max-w-[85%]">
                             <p className="text-[13px] leading-snug">{mensaje}</p>
                           </div>
                         </div>
@@ -363,7 +363,7 @@ export default function Agentes() {
             </div>
           </div>
 
-          <div className="rounded-xl border border-kratos-info/25 bg-kratos-info-soft p-4 flex items-start gap-3">
+          <div className="rounded-none border border-kratos-info/25 bg-kratos-info-soft p-4 flex items-start gap-3">
             <Sparkles size={16} className="text-kratos-info shrink-0 mt-0.5"/>
             <p className="text-[12px] text-kratos-info leading-relaxed">
               <strong>Próximamente:</strong> agentes de conciliación bancaria, semáforo fiscal y monitoreo GPS.
@@ -421,16 +421,16 @@ export default function Agentes() {
 
 function Stepper({ label, hint, value, setValue, min = 0, max = 60 }) {
   return (
-    <div className="rounded-xl border border-kratos-border p-4 bg-white">
+    <div className="rounded-none border border-kratos-border p-4 bg-white">
       <label className="label-mono">{label}</label>
       <div className="flex items-center gap-2 mt-3">
         <button onClick={() => setValue(v => Math.max(min, v-1))}
-          className="w-9 h-9 rounded-lg border border-kratos-border bg-white hover:bg-kratos-bg2 text-kratos-ink text-lg leading-none flex items-center justify-center transition-colors">−</button>
+          className="w-9 h-9 rounded-none border border-kratos-border bg-white hover:bg-kratos-bg2 text-kratos-ink text-lg leading-none flex items-center justify-center transition-colors">−</button>
         <div className="flex-1 text-center font-mono text-lg font-semibold text-kratos-ink py-1.5">
           {value}<span className="text-[11px] text-kratos-muted font-sans font-normal ml-1">días</span>
         </div>
         <button onClick={() => setValue(v => Math.min(max, v+1))}
-          className="w-9 h-9 rounded-lg border border-kratos-border bg-white hover:bg-kratos-bg2 text-kratos-ink text-lg leading-none flex items-center justify-center transition-colors">+</button>
+          className="w-9 h-9 rounded-none border border-kratos-border bg-white hover:bg-kratos-bg2 text-kratos-ink text-lg leading-none flex items-center justify-center transition-colors">+</button>
       </div>
       <p className="text-[11px] text-kratos-muted mt-2">{hint}</p>
     </div>

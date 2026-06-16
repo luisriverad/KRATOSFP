@@ -99,7 +99,7 @@ export default function MiniMap({ puntos = [], unidad = 'G009', ruta = 'Zempoala
   const last = projected.length ? projected[projected.length - 1] : null
 
   return (
-    <div className="relative rounded-xl border border-kratos-border overflow-hidden bg-kratos-panel-2" style={{ height }}>
+    <div className="relative rounded-none border border-kratos-border overflow-hidden bg-kratos-panel-2" style={{ height }}>
       <div className="absolute top-3 left-3 flex items-center gap-1.5 z-10">
         <span className="chip-info"><Navigation size={11}/> En vivo · GPS</span>
         <span className="chip-muted font-mono">{unidad}</span>

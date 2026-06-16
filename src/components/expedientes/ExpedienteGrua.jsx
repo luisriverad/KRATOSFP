@@ -33,7 +33,7 @@ export default function ExpedienteGrua({ grua, expediente }) {
       <section className="relative px-5 py-5 border-b border-kratos-border bg-gradient-to-br from-kratos-red/10 via-transparent to-transparent">
         <div className="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-5">
           <div className="flex items-start gap-4">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-kratos-red to-kratos-red-dark flex items-center justify-center shrink-0 shadow-glow-red">
+            <div className="w-20 h-20 rounded-none bg-gradient-to-br from-kratos-red to-kratos-red-dark flex items-center justify-center shrink-0 shadow-glow-red">
               <Truck size={36} className="text-kratos-ink" />
             </div>
             <div>
@@ -333,8 +333,8 @@ export default function ExpedienteGrua({ grua, expediente }) {
 function RegistroTelcelBtn({ unidad }) {
   const [registrado, setRegistrado] = useState(false)
   return (
-    <div className="flex flex-col items-center justify-center text-center py-8 px-4 rounded-xl border border-dashed border-kratos-border bg-kratos-panel">
-      <div className="w-12 h-12 rounded-xl bg-kratos-info-soft text-kratos-info flex items-center justify-center mb-3">
+    <div className="flex flex-col items-center justify-center text-center py-8 px-4 rounded-none border border-dashed border-kratos-border bg-kratos-panel">
+      <div className="w-12 h-12 rounded-none bg-kratos-info-soft text-kratos-info flex items-center justify-center mb-3">
         <MapPin size={22} />
       </div>
       {registrado ? (
@@ -348,7 +348,7 @@ function RegistroTelcelBtn({ unidad }) {
           <div className="text-sm font-semibold text-kratos-ink">Telemetría Telcel</div>
           <p className="text-[12px] text-kratos-muted mt-1 mb-4 max-w-xs">Da de alta la unidad {unidad} en la plataforma de telemetría Telcel para rastreo GPS en vivo.</p>
           <button onClick={() => setRegistrado(true)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-kratos-ink text-white text-sm font-medium hover:opacity-90 transition">
+            className="flex items-center gap-2 px-4 py-2.5 rounded-none bg-kratos-ink text-white text-sm font-medium hover:opacity-90 transition">
             <Plus size={15} /> Registro de telemetría Telcel
           </button>
         </>

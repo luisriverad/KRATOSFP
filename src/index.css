@@ -25,10 +25,10 @@ body {
 @layer components {
   /* Panels */
   .panel {
-    @apply bg-kratos-panel border border-kratos-border rounded-2xl shadow-panel;
+    @apply bg-kratos-panel border border-kratos-border rounded-none shadow-panel;
   }
   .panel-flat {
-    @apply bg-kratos-panel border border-kratos-border rounded-2xl;
+    @apply bg-kratos-panel border border-kratos-border rounded-none;
   }
   .panel-hover { transition: all 200ms ease; }
   .panel-hover:hover {
@@ -36,7 +36,7 @@ body {
     box-shadow: 0 4px 14px -4px rgba(15,14,12,0.09), 0 1px 2px rgba(15,14,12,0.04);
   }
   .surface-2 {
-    @apply rounded-xl border border-kratos-border bg-kratos-panel-2;
+    @apply rounded-none border border-kratos-border bg-kratos-panel-2;
   }
 
   /* Chips — light & sober */
@@ -53,7 +53,7 @@ body {
 
   /* Buttons */
   .btn {
-    @apply inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border transition-all;
+    @apply inline-flex items-center gap-2 px-3 py-2 rounded-none text-sm font-medium border transition-all;
   }
   .btn-primary { @apply btn bg-kratos-ink border-kratos-ink text-white hover:bg-black; }
   .btn-ghost   { @apply btn bg-white border-kratos-border text-kratos-ink hover:border-kratos-border-2 hover:bg-kratos-panel-2; }
@@ -107,7 +107,7 @@ body {
 .recharts-tooltip-wrapper .recharts-default-tooltip {
   background: #FFFFFF !important;
   border: 1px solid #E5E3DC !important;
-  border-radius: 10px !important;
+  border-radius: 0 !important;
   box-shadow: 0 4px 14px -4px rgba(15,14,12,0.10);
   padding: 8px 10px !important;
 }
@@ -122,7 +122,7 @@ body {
   background: #FFFFFF;
   color: #1A1714;
   border: 1px solid #E5E3DC;
-  border-radius: 10px;
+  border-radius: 0;
   padding: 8px 12px;
   font-size: 14px;
   outline: none;

@@ -4,16 +4,8 @@ export function StatGrid({ children, cols = 4, className = '' }) {
 }
 
 export function Stat({ label, value, hint, accent = 'default', mono = true }) {
-  const accents = {
-    default: 'border-l-kratos-border-2',
-    ok:      'border-l-kratos-ok',
-    warn:    'border-l-kratos-warn',
-    danger:  'border-l-kratos-danger',
-    info:    'border-l-kratos-info',
-    red:     'border-l-kratos-red'
-  }
   return (
-    <div className={`p-3 rounded-lg bg-kratos-panel border border-kratos-border border-l-2 ${accents[accent]}`}>
+    <div className="p-3 bg-kratos-panel border border-kratos-border">
       <div className="label-mono">{label}</div>
       <div className={`text-base font-display font-semibold text-kratos-ink mt-1 ${mono ? 'tabular-nums' : ''}`}>{value}</div>
       {hint && <div className="text-[10px] text-kratos-muted mt-0.5">{hint}</div>}

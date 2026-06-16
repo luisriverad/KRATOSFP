@@ -22,7 +22,7 @@ export default function Timeline({ items = [], compact = false }) {
               {it.meta && (
                 <div className="flex flex-wrap gap-1 mt-2">
                   {it.meta.map((m, j) => (
-                    <span key={j} className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-kratos-bg2 text-kratos-muted">{m}</span>
+                    <span key={j} className="text-[10px] font-mono px-1.5 py-0.5 rounded-none bg-kratos-bg2 text-kratos-muted">{m}</span>
                   ))}
                 </div>
               )}

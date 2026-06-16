@@ -19,9 +19,9 @@ export default function DocCard({ tipo, nombre, vence, estado = 'vigente', emiso
   const s = STYLES[estado]
 
   return (
-    <div className={`p-4 rounded-xl border ${s.wrap} group`}>
+    <div className={`p-4 rounded-none border ${s.wrap} group`}>
       <div className="flex items-start gap-3">
-        <div className={`w-9 h-9 rounded-lg bg-white border border-kratos-border flex items-center justify-center shrink-0`}>
+        <div className={`w-9 h-9 rounded-none bg-white border border-kratos-border flex items-center justify-center shrink-0`}>
           <Icon size={16} className={s.text} />
         </div>
         <div className="min-w-0 flex-1">

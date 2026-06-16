@@ -20,7 +20,7 @@ export default function ExpedienteProveedor({ proveedor }) {
       <section className="px-5 py-5 border-b border-kratos-border bg-gradient-to-br from-purple-500/10 via-transparent to-transparent">
         <div className="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-4">
           <div className="flex items-start gap-4">
-            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center shrink-0">
+            <div className="w-16 h-16 rounded-none bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center shrink-0">
               <Package size={28} className="text-kratos-ink"/>
             </div>
             <div>

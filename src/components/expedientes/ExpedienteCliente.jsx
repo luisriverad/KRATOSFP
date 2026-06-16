@@ -8,7 +8,7 @@ import ProgressBar from '../ProgressBar'
 import { fmtMXN } from '../../data/mockData'
 import { creditoClientes } from '../../data/creditoData'
 
-const tooltip = { contentStyle: { background:'#FFFFFF', border:'1px solid #E5E3DC', borderRadius:10, fontSize:12 }, labelStyle:{ color:'#4A453F' } }
+const tooltip = { contentStyle: { background:'#FFFFFF', border:'1px solid #E5E3DC', borderRadius:0, fontSize:12 }, labelStyle:{ color:'#4A453F' } }
 
 export default function ExpedienteCliente({ cliente, clienteKey }) {
   if (!cliente) return null
@@ -22,7 +22,7 @@ export default function ExpedienteCliente({ cliente, clienteKey }) {
       <section className="px-7 py-6 border-b border-kratos-border bg-kratos-panel">
         <div className="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-4">
           <div className="flex items-start gap-4">
-            <div className="w-16 h-16 rounded-xl bg-kratos-info-soft border border-kratos-info/20 flex items-center justify-center shrink-0">
+            <div className="w-16 h-16 rounded-none bg-kratos-info-soft border border-kratos-info/20 flex items-center justify-center shrink-0">
               <Building2 size={28} className="text-kratos-info"/>
             </div>
             <div>

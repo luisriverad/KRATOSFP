@@ -6,7 +6,7 @@ export default function AgentCard({ agente, compact = false }) {
     <div className="panel panel-hover p-4">
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-lg bg-kratos-red-soft border border-kratos-red/20 flex items-center justify-center text-kratos-red">
+          <div className="w-9 h-9 rounded-none bg-kratos-red-soft border border-kratos-red/20 flex items-center justify-center text-kratos-red">
             <Bot size={16} />
           </div>
           <div>

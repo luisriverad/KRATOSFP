@@ -1,19 +1,10 @@
 import { ArrowDownRight, ArrowUpRight } from 'lucide-react'
 
 export default function KPICard({ label, value, delta, deltaLabel, hint, icon: Icon, accent = 'default' }) {
-  const accents = {
-    default: 'border-l-kratos-border-2',
-    ok:      'border-l-kratos-ok',
-    warn:    'border-l-kratos-warn',
-    danger:  'border-l-kratos-danger',
-    info:    'border-l-kratos-info',
-    red:     'border-l-kratos-red',
-    plum:    'border-l-kratos-plum'
-  }
   const positive = typeof delta === 'number' ? delta >= 0 : null
 
   return (
-    <div className={`panel-flat p-5 border-l-2 ${accents[accent] || accents.default}`}>
+    <div className="panel-flat p-5">
       <div className="flex items-start justify-between mb-3">
         <span className="label-mono">{label}</span>
         {Icon && <Icon size={14} className="text-kratos-muted" />}

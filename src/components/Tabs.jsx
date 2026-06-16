@@ -47,7 +47,7 @@ export function Tab({ value, icon: Icon, badge, children, numero, style = 'pills
         {Icon && <Icon size={13} />}
         <span>{children}</span>
         {badge !== undefined && badge !== null && (
-          <span className={`ml-1 px-1.5 py-[1px] rounded-md text-[10px] font-mono ${isActive ? 'bg-kratos-ink/10 text-kratos-ink' : 'bg-kratos-bg2 text-kratos-muted'}`}>{badge}</span>
+          <span className={`ml-1 px-1.5 py-[1px] rounded-none text-[10px] font-mono ${isActive ? 'bg-kratos-ink/10 text-kratos-ink' : 'bg-kratos-bg2 text-kratos-muted'}`}>{badge}</span>
         )}
         {isActive && <span className="absolute left-2 right-2 -bottom-px h-[2px] bg-kratos-ink rounded-full" />}
       </button>
@@ -58,7 +58,7 @@ export function Tab({ value, icon: Icon, badge, children, numero, style = 'pills
     <button
       type="button"
       onClick={() => ctx.setActive(value)}
-      className={`inline-flex items-center gap-2 px-3.5 py-2 text-[13px] font-medium rounded-lg whitespace-nowrap transition-all
+      className={`inline-flex items-center gap-2 px-3.5 py-2 text-[13px] font-medium rounded-none whitespace-nowrap transition-all
         ${isActive
           ? 'bg-kratos-ink text-white'
           : 'text-kratos-subtle hover:bg-kratos-bg2/70'}`}
@@ -67,7 +67,7 @@ export function Tab({ value, icon: Icon, badge, children, numero, style = 'pills
       {Icon && <Icon size={13} className={isActive ? 'text-white/85' : 'text-kratos-muted'} />}
       <span>{children}</span>
       {badge !== undefined && badge !== null && (
-        <span className={`ml-1 px-1.5 py-[1px] rounded-md text-[10px] font-mono ${isActive ? 'bg-white/15 text-white' : 'bg-white text-kratos-muted border border-kratos-border'}`}>{badge}</span>
+        <span className={`ml-1 px-1.5 py-[1px] rounded-none text-[10px] font-mono ${isActive ? 'bg-white/15 text-white' : 'bg-white text-kratos-muted border border-kratos-border'}`}>{badge}</span>
       )}
     </button>
   )

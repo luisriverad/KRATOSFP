@@ -9,10 +9,11 @@ import AgentCard from '../components/AgentCard'
 import { Tabs, TabsList, Tab, TabPanel } from '../components/Tabs'
 import GaugeRing from '../components/GaugeRing'
 import ProgressBar from '../components/ProgressBar'
+import BrainPanel from '../components/BrainPanel'
 import { calidad, agentes, checklists, fmtMXN } from '../data/mockData'
 import { matrizRiesgoOperativo, ncRecurrentes, scoreISO, alertasLegales, costoNoCalidad } from '../data/iaData'
 
-const tooltip = { contentStyle: { background:'#FFFFFF', border:'1px solid #E5E3DC', borderRadius:10, fontSize:12 }, labelStyle:{ color:'#4A453F' } }
+const tooltip = { contentStyle: { background:'#FFFFFF', border:'1px solid #E5E3DC', borderRadius:0, fontSize:12 }, labelStyle:{ color:'#4A453F' } }
 
 // Análisis de Kratos FP Brain sobre el costo de no calidad
 const ANALISIS_BRAIN = [
@@ -86,7 +87,7 @@ export default function Calidad() {
       />
 
       {okFolio && (
-        <div className="rounded-xl border border-kratos-ok/30 bg-kratos-ok-soft px-4 py-3 flex items-center gap-3">
+        <div className="rounded-none border border-kratos-ok/30 bg-kratos-ok-soft px-4 py-3 flex items-center gap-3">
           <CheckCircle2 size={18} className="text-kratos-ok shrink-0"/>
           <span className="text-sm text-kratos-ok">No conformidad <strong>{okFolio}</strong> levantada y registrada. Se notificó al responsable.</span>
           <button onClick={() => setOkFolio(null)} className="ml-auto text-kratos-ok/70 hover:text-kratos-ok"><X size={16}/></button>
@@ -126,6 +127,10 @@ export default function Calidad() {
                 </div>
               ))}
             </div>
+            <div className="mt-5"><BrainPanel tema="certificaciones de grúas" insights={[
+              { tag: 'Alerta temprana', tone: 'danger', titulo: 'Recertificación ISO 9001 en riesgo de gap', prediccion: `Con ${certifVencen} de ${certTotal} certificados por vencer en los próximos 30 días, el primero (ISO 9001) caduca el 15 ago; sin auditoría de recertificación agendada antes del 1 jul, el 60% de las grúas afectadas operaría sin cobertura entre ago y sep.`, accion: 'Agendar la auditoría de recertificación antes del 1 jul y consolidar los vencimientos en un solo ciclo anual para evitar gaps.', confianza: 88 },
+              { tag: 'Proyección', tone: 'warn', titulo: 'Vencimientos NOM se concentran en Q3', prediccion: `Manteniendo el patrón actual, ~${Math.max(2, certifVencen + 1)} certificados (NOM-006-STPS de grúas) vencerán dentro del mismo trimestre, generando un pico de trámites y costos de inspección estimado en 1.4x el mes promedio hacia Q3.`, accion: 'Escalonar las renovaciones NOM y negociar tarifa por volumen con la unidad verificadora antes de agosto.', confianza: 76 },
+            ]}/></div>
           </TabPanel>
 
           {/* COSTO NO CALIDAD */}
@@ -153,13 +158,13 @@ export default function Calidad() {
             {/* Análisis por Kratos FP Brain */}
             {!showAnalisis ? (
               <button onClick={() => setShowAnalisis(true)}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl bg-kratos-ink text-white text-sm font-semibold hover:opacity-90 transition">
+                className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-none bg-kratos-ink text-white text-sm font-semibold hover:opacity-90 transition">
                 <BrainCircuit size={18}/> Análisis por Kratos FP Brain
               </button>
             ) : (
               <div className="space-y-3">
                 <div className="flex items-center gap-2.5">
-                  <span className="w-9 h-9 rounded-lg bg-kratos-ink text-white flex items-center justify-center shrink-0"><BrainCircuit size={17}/></span>
+                  <span className="w-9 h-9 rounded-none bg-kratos-ink text-white flex items-center justify-center shrink-0"><BrainCircuit size={17}/></span>
                   <div>
                     <h3 className="font-display text-base font-semibold text-kratos-ink leading-tight">Análisis por Kratos FP Brain</h3>
                     <p className="text-[12px] text-kratos-muted">Recomendaciones y planes de trabajo sobre los mayores costos de no calidad</p>
@@ -226,6 +231,10 @@ export default function Calidad() {
               </table>
             </div>
             <div className="mt-3 text-[11px] text-kratos-subtle px-2">IA detecta patrones repetidos para implementar controles preventivos automáticos.</div>
+            <div className="mt-5"><BrainPanel tema="no conformidades recurrentes" insights={[
+              { tag: 'Tendencia', tone: 'danger', titulo: 'NC por amarre/rigging escalan a crítico', prediccion: `Los patrones con ${ncRecRepetic} repeticiones acumuladas crecen ~18% mes a mes; las NC por amarre reincidirán cerca de 3 veces más en Q3 y la más frecuente cruzará el umbral crítico (5x) en 6-8 semanas si no se estandariza el procedimiento de rigging.`, accion: 'Estandarizar el rigging con checklist pre-izaje obligatorio y recertificar operadores reincidentes antes de cerrar julio.', confianza: 84 },
+              { tag: 'Oportunidad', tone: 'warn', titulo: 'Tres patrones concentran el costo evitable', prediccion: `El 70% de las repeticiones proviene de 3 patrones; atacándolos con control preventivo automático se proyecta reducir la reincidencia ~45% en 90 días y evitar 8-10 NC nuevas por trimestre.`, accion: 'Disparar un control automático (alerta + bloqueo de operación) ligado a los 3 patrones de mayor repetición.', confianza: 79 },
+            ]}/></div>
           </TabPanel>
 
           {/* ALERTAS LEGALES */}
@@ -252,6 +261,10 @@ export default function Calidad() {
                 </tbody>
               </table>
             </div>
+            <div className="mt-5"><BrainPanel tema="obligaciones legales" insights={[
+              { tag: 'Riesgo', tone: 'danger', titulo: 'Obligaciones próximas a vencer sin holgura', prediccion: `Hay ${legalesProximas} obligación(es) en estado "próximo"; la de menor plazo vence dentro de los próximos 30 días, y al ritmo actual de gestión documental ~40% llegaría a <15 días restantes, exponiendo a multa o suspensión si se cruza el vencimiento sin renovar.`, accion: 'Iniciar la renovación de los documentos con <30 días ahora y asignar responsable con fecha límite interna 10 días antes del vencimiento.', confianza: 86 },
+              { tag: 'Proyección', tone: 'warn', titulo: 'Carga documental se acumula en el siguiente trimestre', prediccion: `De las ${alertasLegales.length} obligaciones en seguimiento, varias vencen en ventana de 31-90 días; sin escalonarlas, 3-4 trámites se concentrarán en el mismo mes, elevando el riesgo de incumplimiento por saturación administrativa.`, accion: 'Calendarizar las renovaciones de 31-90 días distribuidas y automatizar recordatorios a 60/30/15 días.', confianza: 73 },
+            ]}/></div>
           </TabPanel>
         </Tabs>
       </div>
@@ -262,7 +275,7 @@ export default function Calidad() {
           <form onSubmit={levantarNC} className="relative panel w-full max-w-lg p-6 shadow-2xl max-h-[88vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <button type="button" onClick={() => setShowNC(false)} className="absolute right-4 top-4 text-kratos-muted hover:text-kratos-ink transition"><X size={18}/></button>
             <div className="flex items-center gap-2 mb-4">
-              <span className="w-9 h-9 rounded-lg bg-kratos-danger text-white flex items-center justify-center"><AlertOctagon size={16}/></span>
+              <span className="w-9 h-9 rounded-none bg-kratos-danger text-white flex items-center justify-center"><AlertOctagon size={16}/></span>
               <div>
                 <h3 className="font-display text-lg font-semibold text-kratos-ink leading-tight">Levantar no conformidad</h3>
                 <p className="text-[12px] text-kratos-muted">Folio automático · {'NC-' + String(calidad.noConformidades.length + ncsLevantadas.length + 1).padStart(3, '0')}</p>
@@ -273,38 +286,38 @@ export default function Calidad() {
               <div>
                 <label className="text-[12px] text-kratos-muted">Hallazgo *</label>
                 <input value={formNC.hallazgo} onChange={(e) => setFormNC(f => ({ ...f, hallazgo: e.target.value }))} placeholder="Título del incumplimiento detectado"
-                  className="w-full mt-1 px-3 py-2.5 bg-kratos-panel-2 border border-kratos-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-kratos-border"/>
+                  className="w-full mt-1 px-3 py-2.5 bg-kratos-panel-2 border border-kratos-border rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-kratos-border"/>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="text-[12px] text-kratos-muted">Área / Proceso</label>
                   <select value={formNC.area} onChange={(e) => setFormNC(f => ({ ...f, area: e.target.value }))}
-                    className="w-full mt-1 px-3 py-2.5 bg-kratos-panel-2 border border-kratos-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-kratos-border">
+                    className="w-full mt-1 px-3 py-2.5 bg-kratos-panel-2 border border-kratos-border rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-kratos-border">
                     {['Operaciones', 'Finanzas', 'Compras', 'Almacén', 'RRHH', 'Calidad', 'SHEQ'].map(a => <option key={a}>{a}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="text-[12px] text-kratos-muted">Severidad</label>
                   <select value={formNC.severidad} onChange={(e) => setFormNC(f => ({ ...f, severidad: e.target.value }))}
-                    className="w-full mt-1 px-3 py-2.5 bg-kratos-panel-2 border border-kratos-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-kratos-border">
+                    className="w-full mt-1 px-3 py-2.5 bg-kratos-panel-2 border border-kratos-border rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-kratos-border">
                     {['Crítica', 'Mayor', 'Menor'].map(s => <option key={s}>{s}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="text-[12px] text-kratos-muted">Responsable</label>
                   <input value={formNC.responsable} onChange={(e) => setFormNC(f => ({ ...f, responsable: e.target.value }))} placeholder="Nombre"
-                    className="w-full mt-1 px-3 py-2.5 bg-kratos-panel-2 border border-kratos-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-kratos-border"/>
+                    className="w-full mt-1 px-3 py-2.5 bg-kratos-panel-2 border border-kratos-border rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-kratos-border"/>
                 </div>
               </div>
               <div>
                 <label className="text-[12px] text-kratos-muted">Descripción</label>
                 <textarea value={formNC.detalle} onChange={(e) => setFormNC(f => ({ ...f, detalle: e.target.value }))} rows={3} placeholder="Detalle del hallazgo, evidencia y acción inmediata…"
-                  className="w-full mt-1 px-3 py-2.5 bg-kratos-panel-2 border border-kratos-border rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-kratos-border"/>
+                  className="w-full mt-1 px-3 py-2.5 bg-kratos-panel-2 border border-kratos-border rounded-none text-sm resize-none focus:outline-none focus:ring-2 focus:ring-kratos-border"/>
               </div>
             </div>
 
             <button type="submit" disabled={!formNC.hallazgo.trim()}
-              className="mt-5 px-4 py-2.5 bg-kratos-danger text-white rounded-lg text-sm font-medium hover:opacity-90 transition disabled:opacity-40">
+              className="mt-5 px-4 py-2.5 bg-kratos-danger text-white rounded-none text-sm font-medium hover:opacity-90 transition disabled:opacity-40">
               Levantar NC
             </button>
           </form>

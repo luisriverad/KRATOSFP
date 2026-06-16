@@ -228,7 +228,7 @@ export default function KratosBrain() {
     <div className="flex flex-col h-[calc(100vh-7rem)]">
       {/* Encabezado */}
       <div className="flex items-center gap-3 mb-4">
-        <span className="w-11 h-11 rounded-xl bg-kratos-ink text-white flex items-center justify-center shrink-0">
+        <span className="w-11 h-11 rounded-none bg-kratos-ink text-white flex items-center justify-center shrink-0">
           <Brain size={20} />
         </span>
         <div>
@@ -244,10 +244,10 @@ export default function KratosBrain() {
       <div className="flex-1 panel overflow-y-auto p-5 space-y-5">
         {messages.map((msg, i) => (
           <div key={i} className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
-            <span className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${msg.role === 'user' ? 'bg-kratos-panel-2 text-kratos-subtle' : 'bg-kratos-ink text-white'}`}>
+            <span className={`w-8 h-8 rounded-none flex items-center justify-center shrink-0 ${msg.role === 'user' ? 'bg-kratos-panel-2 text-kratos-subtle' : 'bg-kratos-ink text-white'}`}>
               {msg.role === 'user' ? <User size={15} /> : <Brain size={15} />}
             </span>
-            <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${msg.role === 'user' ? 'bg-kratos-ink text-white' : 'bg-kratos-panel-2 border border-kratos-border'}`}>
+            <div className={`max-w-[80%] rounded-none px-4 py-3 ${msg.role === 'user' ? 'bg-kratos-ink text-white' : 'bg-kratos-panel-2 border border-kratos-border'}`}>
               {msg.role === 'user'
                 ? <p className="text-sm leading-relaxed">{msg.text}</p>
                 : <Rich text={msg.text} />}
@@ -256,8 +256,8 @@ export default function KratosBrain() {
         ))}
         {thinking && (
           <div className="flex gap-3">
-            <span className="w-8 h-8 rounded-lg bg-kratos-ink text-white flex items-center justify-center shrink-0"><Brain size={15} /></span>
-            <div className="bg-kratos-panel-2 border border-kratos-border rounded-2xl px-4 py-3 flex items-center gap-1.5">
+            <span className="w-8 h-8 rounded-none bg-kratos-ink text-white flex items-center justify-center shrink-0"><Brain size={15} /></span>
+            <div className="bg-kratos-panel-2 border border-kratos-border rounded-none px-4 py-3 flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 bg-kratos-muted rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
               <span className="w-1.5 h-1.5 bg-kratos-muted rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
               <span className="w-1.5 h-1.5 bg-kratos-muted rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
@@ -275,7 +275,7 @@ export default function KratosBrain() {
         <div className="flex flex-wrap gap-2">
           {PREGUNTAS.map((p, i) => (
             <button key={i} onClick={() => ask(p)} disabled={thinking}
-              className="text-left text-[12px] px-3 py-2 rounded-lg border border-kratos-border bg-kratos-panel hover:bg-kratos-panel-2 text-kratos-text transition disabled:opacity-50">
+              className="text-left text-[12px] px-3 py-2 rounded-none border border-kratos-border bg-kratos-panel hover:bg-kratos-panel-2 text-kratos-text transition disabled:opacity-50">
               {p}
             </button>
           ))}
@@ -288,10 +288,10 @@ export default function KratosBrain() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Pregúntale al Brain sobre cualquier área del negocio…"
-          className="flex-1 px-4 py-3 bg-kratos-panel border border-kratos-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-kratos-border"
+          className="flex-1 px-4 py-3 bg-kratos-panel border border-kratos-border rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-kratos-border"
         />
         <button type="submit" disabled={thinking || !input.trim()}
-          className="w-12 h-12 rounded-xl bg-kratos-ink text-white flex items-center justify-center hover:opacity-90 transition disabled:opacity-40 shrink-0">
+          className="w-12 h-12 rounded-none bg-kratos-ink text-white flex items-center justify-center hover:opacity-90 transition disabled:opacity-40 shrink-0">
           <Send size={17} />
         </button>
       </form>

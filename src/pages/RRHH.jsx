@@ -10,12 +10,13 @@ import ProgressBar from '../components/ProgressBar'
 import { Tabs, TabsList, Tab, TabPanel } from '../components/Tabs'
 import Drawer from '../components/Drawer'
 import ExpedientePersonal from '../components/expedientes/ExpedientePersonal'
+import BrainPanel from '../components/BrainPanel'
 import { rrhh, agentes, usuarios } from '../data/mockData'
 import { expedientesPersonal, personalIndex, calendarioDescansos, formatosInternos, centrosCosto } from '../data/personalData'
 import { riesgoRotacion, matrizSucesion, certificacionesCriticas, costoRH, scoreCultura, cvFiltrados } from '../data/iaData'
 import { fmtMXN } from '../data/mockData'
 
-const tooltip = { contentStyle: { background:'#FFFFFF', border:'1px solid #E5E3DC', borderRadius:10, fontSize:12 }, labelStyle:{ color:'#4A453F' } }
+const tooltip = { contentStyle: { background:'#FFFFFF', border:'1px solid #E5E3DC', borderRadius:0, fontSize:12 }, labelStyle:{ color:'#4A453F' } }
 
 export default function RRHH() {
   const [personaSel, setPersonaSel] = useState(null)
@@ -76,7 +77,7 @@ export default function RRHH() {
                   placeholder="Buscar colaborador, puesto o área..."
                   value={busq}
                   onChange={e => setBusq(e.target.value)}
-                  className="w-full bg-white border border-kratos-border rounded-lg pl-10 pr-3 py-2 text-sm text-kratos-text placeholder:text-kratos-subtle focus:outline-none focus:border-kratos-red/50"
+                  className="w-full bg-white border border-kratos-border rounded-none pl-10 pr-3 py-2 text-sm text-kratos-text placeholder:text-kratos-subtle focus:outline-none focus:border-kratos-red/50"
                 />
               </div>
               <span className="text-xs text-kratos-subtle">{personasFiltradas.length} colaboradores</span>
@@ -120,6 +121,10 @@ export default function RRHH() {
                 )
               })}
             </div>
+            <div className="mt-5"><BrainPanel tema="plantilla y expedientes" insights={[
+              { tag: 'Riesgo', tone: 'warn', titulo: 'Vencimiento de certificaciones operativas', prediccion: 'En los próximos 30 días vencen DC3 y licencias federales de 3 operadores; sin renovar, ~2 grúas quedarían sin operador certificado para inicios de junio.', accion: 'Agendar recertificación STPS antes del 1 jun y bloquear asignación a unidades con operador por vencer.', confianza: 84 },
+              { tag: 'Tendencia', tone: 'info', titulo: 'Plantilla crece sin estructura de mandos medios', prediccion: 'Con 23 colaboradores y altas sostenidas, el tramo de control de la Dirección llegará a >12 reportes directos en Q3, elevando rotación operativa ~2 pts.', accion: 'Formalizar jefaturas de Taller y Maniobras antes de cerrar el trimestre.', confianza: 76 },
+            ]}/></div>
           </TabPanel>
 
           {/* FORMATOS */}
@@ -146,6 +151,10 @@ export default function RRHH() {
                 </tbody>
               </table>
             </div>
+            <div className="mt-5"><BrainPanel tema="formatos internos de RH" insights={[
+              { tag: 'Oportunidad', tone: 'ok', titulo: 'Digitalizar formatos de alto uso', prediccion: 'Alta de personal y Permiso/incidencia se usan a un ritmo que sumará ~40 capturas en papel el próximo mes; digitalizarlos ahorraría ~6 h/mes de RH.', accion: 'Migrar F-010 y F-011 a captura en línea antes del próximo periodo.', confianza: 72 },
+              { tag: 'Alerta temprana', tone: 'warn', titulo: 'Formatos sin uso reciente', prediccion: 'Formatos sin actividad en >30 días tienden a quedar desactualizados frente a cambios normativos; 2 de ellos serán obsoletos en el trimestre.', accion: 'Revisar y versionar los formatos sin uso reciente.', confianza: 69 },
+            ]}/></div>
           </TabPanel>
 
           {/* CERTIFICACIONES CRÍTICAS */}
@@ -170,6 +179,10 @@ export default function RRHH() {
                 </tbody>
               </table>
             </div>
+            <div className="mt-5"><BrainPanel tema="certificaciones críticas" insights={[
+              { tag: 'Riesgo', tone: 'danger', titulo: 'Cuello de vencimientos en ventana corta', prediccion: 'Las certificaciones marcadas "próximo" vencen en el mismo periodo; sin acción, en 4–6 semanas habrá personal operando con credencial caduca y exposición a sanción STPS.', accion: 'Calendarizar renovaciones escalonadas y asignar responsable por cada certificación próxima.', confianza: 86 },
+              { tag: 'Tendencia', tone: 'warn', titulo: 'Recertificación recurrente subestimada', prediccion: 'El volumen de cursos por vencer crecerá ~25% al sumar a los nuevos operadores; el presupuesto de capacitación se quedará corto en Q3.', accion: 'Provisionar capacitación adicional y contratar instructor externo por lote.', confianza: 74 },
+            ]}/></div>
           </TabPanel>
 
           {/* COSTO RH */}
@@ -207,6 +220,10 @@ export default function RRHH() {
                 </tbody>
               </table>
             </div>
+            <div className="mt-5"><BrainPanel tema="costo de RH por área" insights={[
+              { tag: 'Proyección', tone: 'warn', titulo: 'Nómina presiona la caja en quincena fuerte', prediccion: 'Con la plantilla actual, el costo de nómina mensual subirá ~3% y la quincena administrativa coincidirá con el pago a SANY, tensando la caja la 2ª semana de junio.', accion: 'Escalonar pagos no críticos fuera de la quincena administrativa.', confianza: 80 },
+              { tag: 'Oportunidad', tone: 'ok', titulo: 'Productividad dispar entre áreas', prediccion: 'Las áreas con productividad <70% arrastrarán el costo/persona ~8% arriba del benchmark si no se ajusta carga de trabajo en el trimestre.', accion: 'Rebalancear funciones en las áreas de menor productividad antes del cierre Q2.', confianza: 71 },
+            ]}/></div>
           </TabPanel>
 
           {/* CENTROS DE COSTO */}
@@ -245,6 +262,10 @@ export default function RRHH() {
                 </tbody>
               </table>
             </div>
+            <div className="mt-5"><BrainPanel tema="centros de costo" insights={[
+              { tag: 'Alerta temprana', tone: 'danger', titulo: 'Centros de costo rumbo a sobreejercicio', prediccion: 'Al ritmo de gasto actual, los centros con avance >75% cerrarán el ejercicio por encima del 100% del presupuesto hacia agosto.', accion: 'Congelar gasto discrecional en los CECO de mayor avance y reasignar saldo de los subejercidos.', confianza: 82 },
+              { tag: 'Tendencia', tone: 'info', titulo: 'Subejercicio en mantenimiento se revertirá', prediccion: 'Los centros con bajo avance (mantenimiento/EPP) tendrán un repunte de gasto en Q3 por el plan preventivo de flota; el avance saltará ~20 pts.', accion: 'Adelantar compras de EPP y refacciones mientras hay holgura presupuestal.', confianza: 70 },
+            ]}/></div>
           </TabPanel>
         </Tabs>
       </div>

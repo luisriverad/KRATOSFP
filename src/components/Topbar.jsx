@@ -29,18 +29,18 @@ export default function Topbar() {
           placeholder="Buscar en todo el sistema…"
           className="w-full pl-10 pr-12 py-2 bg-kratos-panel-2"
         />
-        <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded bg-white border border-kratos-border text-[10px] text-kratos-muted font-mono flex items-center gap-0.5">
+        <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded-none bg-white border border-kratos-border text-[10px] text-kratos-muted font-mono flex items-center gap-0.5">
           <Command size={9} />K
         </kbd>
       </div>
 
-      <button className="w-9 h-9 rounded-lg border border-kratos-border bg-white hover:bg-kratos-panel-2 flex items-center justify-center text-kratos-subtle transition">
+      <button className="w-9 h-9 rounded-none border border-kratos-border bg-white hover:bg-kratos-panel-2 flex items-center justify-center text-kratos-subtle transition">
         <HelpCircle size={15}/>
       </button>
 
       {/* Alerts */}
       <div className="relative">
-        <button onClick={() => setOpenAlerts(o => !o)} className="relative w-9 h-9 rounded-lg border border-kratos-border bg-white hover:bg-kratos-panel-2 flex items-center justify-center text-kratos-subtle transition">
+        <button onClick={() => setOpenAlerts(o => !o)} className="relative w-9 h-9 rounded-none border border-kratos-border bg-white hover:bg-kratos-panel-2 flex items-center justify-center text-kratos-subtle transition">
           <Bell size={15}/>
           <span className="absolute -top-1 -right-1 bg-kratos-red text-white text-[10px] font-semibold rounded-full w-4 h-4 flex items-center justify-center font-mono">{alertas.length}</span>
         </button>
