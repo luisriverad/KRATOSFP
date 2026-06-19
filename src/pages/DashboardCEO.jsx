@@ -1,18 +1,24 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Banknote, TrendingUp, Truck, ShieldCheck, Users, Package, AlertTriangle, ArrowRight, Gauge, Activity, AlertOctagon, Target, Award, ChevronDown } from 'lucide-react'
-import { ResponsiveContainer, BarChart, Bar, LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ReferenceLine, Cell, ComposedChart } from 'recharts'
+import { Banknote, TrendingUp, Truck, ShieldCheck, Users, Package, AlertTriangle, ArrowRight, Gauge, Activity, AlertOctagon, Target, Award, ChevronDown, ChevronRight, FileSpreadsheet } from 'lucide-react'
+import { ResponsiveContainer, BarChart, Bar, LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ReferenceLine, Cell, ComposedChart, Legend } from 'recharts'
 import { alertas, crm, finanzas, flota, fmtMXN, usuarios, rrhh, calidad, checklists } from '../data/mockData'
 import { creditoResumen } from '../data/creditoData'
 import { controlCargas } from '../data/operacionesData'
 import {
   ebitdaMensual, ebitdaPorProyecto, rentabilidadGruas, flujoFuturo,
-  scoreEmpresa, riesgoGeneral, dependencias, utilizacionActivos, costoNoCalidad, usoActivosMensual
+  scoreEmpresa, riesgoGeneral, dependencias, utilizacionActivos, costoNoCalidad, usoActivosMensual, cashflow13s
 } from '../data/iaData'
 import KPILight from '../components/KPILight'
 import ProgressBar from '../components/ProgressBar'
+import BrainPanel from '../components/BrainPanel'
 
 const tooltipCfg = { contentStyle: { background:'#FFFFFF', border:'1px solid #E5E3DC', borderRadius:0, fontSize:12 }, labelStyle:{ color:'#4A453F' } }
+
+// Cashflow centrado en la semana actual: 3 atrás · actual · 2 adelante
+const SEMANA_ACTUAL = 'S24'
+const _idxSemActual = cashflow13s.findIndex(s => s.semana === SEMANA_ACTUAL)
+const cashflowVentana = cashflow13s.slice(Math.max(0, _idxSemActual - 3), _idxSemActual + 3)
 
 const HOY = new Date('2026-05-14')
 const fmtFechaLarga = (d) => d.toLocaleDateString('es-MX', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' }).replace(/ de /gi, ' ')
@@ -51,6 +57,8 @@ export default function DashboardCEO() {
   const credito       = creditoResumen()
   const cargasMes     = controlCargas.filter(c => c.fecha.startsWith('2026-05'))
   const ingresoOpMes  = cargasMes.reduce((s, c) => s + c.monto, 0)
+  const ingresoFacturadoMes = cargasMes.filter(c => c.estado === 'Facturado').reduce((s, c) => s + c.monto, 0)
+  const ingresoPendiente    = cargasMes.filter(c => c.estado !== 'Facturado').reduce((s, c) => s + c.monto, 0)
   const ncAbiertas    = calidad.noConformidades.filter(n => n.estado !== 'Cerrada').length
   const docsPorVencer = flota.gruas.filter(g => (new Date(g.docVence) - HOY) / 86400000 < 30).length
   const obligacionesFiscales = finanzas.cumplimientoFiscal.filter(o => o.estado !== 'Al día').length
@@ -389,6 +397,87 @@ export default function DashboardCEO() {
               <div className="text-[12px] text-kratos-subtle mt-2">{c.detalle}</div>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Cashflow (movido desde Finanzas) */}
+      <section>
+        <div className="flex items-baseline justify-between mb-3">
+          <h2 className="section-title flex items-center gap-2"><Banknote size={16} className="text-kratos-muted"/> Cashflow</h2>
+          <span className="label-mono">Flujo de caja semanal proyectado</span>
+        </div>
+        <div className="space-y-5">
+          {/* Acceso al formato completo de forecast cashflow */}
+          <Link to="/finanzas/formato-cashflow"
+            className="panel panel-hover p-4 flex items-center justify-between gap-4 group">
+            <div className="flex items-center gap-3">
+              <span className="w-9 h-9 grid place-items-center bg-kratos-info-soft text-kratos-info shrink-0"><FileSpreadsheet size={18}/></span>
+              <div>
+                <div className="font-display font-semibold text-kratos-ink leading-tight">Ir a Formato Cashflow</div>
+                <div className="text-[12px] text-kratos-muted">Forecast semanal completo · Pronóstico vs. Real por concepto</div>
+              </div>
+            </div>
+            <span className="btn-primary shrink-0 group-hover:bg-black">IR A FORMATO CASHFLOW <ChevronRight size={15}/></span>
+          </Link>
+
+          {/* Cashflow centrado en la semana actual */}
+          <div className="panel p-5">
+            <div className="flex items-baseline justify-between mb-3">
+              <h3 className="section-title text-base">Cashflow semanal · {SEMANA_ACTUAL} (semana actual)</h3>
+              <span className="label-mono">3 atrás · actual · 2 adelante</span>
+            </div>
+            <div className="relative" style={{ width:'100%', height: 280 }}>
+              {/* Marca de agua de la semana actual */}
+              <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                <span className="font-display font-bold tracking-tight select-none" style={{ fontSize: 120, color: 'rgba(30,58,138,0.06)' }}>{SEMANA_ACTUAL}</span>
+              </div>
+              <ResponsiveContainer>
+                <ComposedChart data={cashflowVentana} margin={{ top: 8, right: 20, bottom: 0, left: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false}/>
+                  <XAxis dataKey="semana" fontSize={11} tickLine={false} axisLine={false}/>
+                  <YAxis fontSize={11} tickFormatter={(v)=>`${(v/1e6).toFixed(1)}M`} tickLine={false} axisLine={false} width={50}/>
+                  <Tooltip {...tooltipCfg} formatter={(v)=> fmtMXN(v)}/>
+                  <Legend wrapperStyle={{ fontSize: 12 }}/>
+                  <ReferenceLine x={SEMANA_ACTUAL} stroke="#1E3A8A" strokeDasharray="5 4" strokeWidth={1.5}
+                    label={{ value: 'Semana actual', position: 'top', fill: '#1E3A8A', fontSize: 11, fontWeight: 600 }}/>
+                  <Bar dataKey="entrada" fill="#047857" radius={[4,4,0,0]} name="Entradas"/>
+                  <Bar dataKey="salida"  fill="#B91C1C" radius={[4,4,0,0]} name="Salidas"/>
+                  <Line type="monotone" dataKey="saldo" stroke="#1E3A8A" strokeWidth={2.5} dot name="Saldo proyectado"/>
+                </ComposedChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="grid grid-cols-6 gap-1 mt-3">
+              {cashflowVentana.map(s => {
+                const esActual = s.semana === SEMANA_ACTUAL
+                return (
+                  <div key={s.semana} className={`text-center py-2 rounded-none text-[10px] font-mono ${esActual ? 'ring-2 ring-kratos-info bg-kratos-info-soft text-kratos-info font-semibold' : s.tension === 'alta' ? 'bg-kratos-danger-soft text-kratos-danger' : s.tension === 'media' ? 'bg-kratos-warn-soft text-kratos-warn' : 'bg-kratos-ok-soft text-kratos-ok'}`}>
+                    {s.semana}{esActual ? ' · hoy' : ''}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="surface-2 p-4">
+              <div className="label-mono">Ingreso facturado mes</div>
+              <div className="font-display text-2xl font-semibold text-kratos-ok mt-1">{fmtMXN(ingresoFacturadoMes)}</div>
+              <div className="text-[11px] text-kratos-muted mt-1">{cargasMes.filter(c => c.estado === 'Facturado').length} cargas</div>
+            </div>
+            <div className="surface-2 p-4">
+              <div className="label-mono">Ingreso pendiente</div>
+              <div className="font-display text-2xl font-semibold text-kratos-warn mt-1">{fmtMXN(ingresoPendiente)}</div>
+              <div className="text-[11px] text-kratos-muted mt-1">Sin OC del cliente</div>
+            </div>
+            <div className="surface-2 p-4">
+              <div className="label-mono">Total operativo proyectado</div>
+              <div className="font-display text-2xl font-semibold text-kratos-ink mt-1">{fmtMXN(ingresoFacturadoMes + ingresoPendiente)}</div>
+              <div className="text-[11px] text-kratos-muted mt-1">Mayo 2026</div>
+            </div>
+          </div>
+          <BrainPanel tema="flujo de caja semanal proyectado" insights={[
+            { tag: 'Proyección', tone: 'warn', titulo: 'Caja toca piso en 3 semanas', prediccion: 'Con el patrón actual de entradas vs. salidas, en la semana S27 la caja proyectada cae a ~$1.1M, su nivel más bajo del trimestre, por la concentración de salidas en semanas de tensión alta.', accion: 'Adelantar 2 cobranzas de mayo y diferir pagos no críticos a S28.', confianza: 81 },
+            { tag: 'Oportunidad', tone: 'info', titulo: 'Ingreso pendiente recuperable', prediccion: `Si se factura el ingreso pendiente (${fmtMXN(ingresoPendiente)} sin OC) en las próximas 2 semanas, el saldo proyectado de S26–S27 sube ~18% y elimina la zona de tensión.`, accion: 'Gestionar OC con clientes pendientes antes del cierre de mes.', confianza: 76 },
+          ]}/>
         </div>
       </section>
 

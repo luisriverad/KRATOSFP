@@ -15,7 +15,7 @@ import Timeline from '../components/Timeline'
 import BrainPanel from '../components/BrainPanel'
 import { flota, agentes, checklists, usuarios, rrhh, fmtMXN } from '../data/mockData'
 import { expedientesGruas, expedientesVehiculos } from '../data/expedientesData'
-import { bitacoraDiaria, controlCargas, rutasSCT, procesoDPI } from '../data/operacionesData'
+import { bitacoraDiaria, bitacoraSemanal, controlCargas, rutasSCT, procesoDPI } from '../data/operacionesData'
 import { mantenimientoPredictivo, costoOperativoUnidad, scoreOperadores, telemetria, utilizacionMuerta, formatosOperativos } from '../data/iaData'
 import { oeeObra, oeeFactores, oeePorUnidad, oeePerdidas, otif, otifPorCliente, otifCausas, otifManiobras } from '../data/desempenoData'
 import { diasHasta, fmtDelta } from '../lib/dates'
@@ -33,6 +33,8 @@ export default function Operaciones() {
   const [gruaSel, setGruaSel] = useState(null)
   const [tabActiva, setTabActiva] = useState('desempeno')
   const [showAnalisisCargas, setShowAnalisisCargas] = useState(false)
+  const [semBitSel, setSemBitSel] = useState(() =>
+    (bitacoraSemanal.semanas.find(s => s.estado === 'actual') || bitacoraSemanal.semanas[bitacoraSemanal.semanas.length - 1]).id)
 
   const opsAgents = agentes.filter(a => a.area === 'Operaciones')
   const enObra = flota.gruas.filter(g => g.estado === 'En obra').length
@@ -50,6 +52,16 @@ export default function Operaciones() {
   const cargasMes = controlCargas.filter(c => c.fecha.startsWith('2026-05'))
   const horasMes  = cargasMes.reduce((s, c) => s + c.horas, 0)
   const ingresoMes= cargasMes.reduce((s, c) => s + c.monto, 0)
+  const litrosMes = cargasMes.reduce((s, c) => s + (c.litros || 0), 0)
+
+  // ---- Bitácora semanal: horas por grúa y por día de la semana seleccionada ----
+  const semanaBit  = bitacoraSemanal.semanas.find(s => s.id === semBitSel) || bitacoraSemanal.semanas[0]
+  const horasBit   = (eco) => semanaBit.horas[eco] || bitacoraSemanal.dias.map(() => 0)
+  const totalGrua  = (eco) => horasBit(eco).reduce((s, h) => s + h, 0)
+  const totalDiaBit = bitacoraSemanal.dias.map((_, di) => flota.gruas.reduce((s, g) => s + (semanaBit.horas[g.eco]?.[di] || 0), 0))
+  const totalSemBit = totalDiaBit.reduce((s, h) => s + h, 0)
+  const gruasActivasBit = flota.gruas.filter(g => totalGrua(g.eco) > 0).length
+  const diaPicoBit = totalDiaBit.indexOf(Math.max(...totalDiaBit))
 
   // ---- Desempeño operativo: OEE-Obra & OTIF ----
   const oeePct  = Math.round((oeeObra.disp / 100) * (oeeObra.rend / 100) * (oeeObra.cal / 100) * 100)
@@ -130,6 +142,7 @@ export default function Operaciones() {
             <Tab value="desempeno" icon={Target}>Desempeño · OEE & OTIF</Tab>
             <Tab value="flota"    icon={Truck}        badge={flota.gruas.length}>Flota</Tab>
             <Tab value="bitacora" icon={ClipboardList} badge={bitacoraDiaria.length}>Bitácora</Tab>
+            <Tab value="bitsemanal" icon={Calendar}   badge={bitacoraSemanal.semanas.length}>Bitácora semanal</Tab>
             <Tab value="cargas"   icon={Box}           badge={pendienteOC || null}>Cargas</Tab>
             <Tab value="docs"     icon={FileCheck}     badge={documentosFlota.filter(d => d.estado === 'vencido' || d.estado === 'proximo').length || null}>Documentos</Tab>
             <Tab value="predict"   icon={Gauge}>Mantto predictivo</Tab>
@@ -516,9 +529,95 @@ export default function Operaciones() {
             ]}/></div>
           </TabPanel>
 
+          {/* BITÁCORA SEMANAL */}
+          <TabPanel value="bitsemanal" className="p-5 space-y-4">
+            <div className="flex items-start justify-between gap-4 flex-wrap">
+              <div>
+                <h3 className="section-title">Bitácora semanal de horas por grúa</h3>
+                <p className="text-[13px] text-kratos-muted mt-1">Horas operadas por unidad y por día de la semana. Captura base para facturación, utilización y consumo.</p>
+              </div>
+              <div className="flex gap-1 surface-2 p-1 shrink-0">
+                {bitacoraSemanal.semanas.map(s => (
+                  <button key={s.id}
+                    onClick={() => setSemBitSel(s.id)}
+                    className={`px-3 py-1 rounded-none text-xs ${semBitSel === s.id ? 'bg-kratos-red text-white' : 'text-kratos-subtle hover:text-kratos-ink'}`}>
+                    Sem {s.num}{s.estado === 'actual' ? ' · hoy' : ''}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              <div className="surface-2 p-3">
+                <div className="label-mono">Horas semana</div>
+                <div className="text-xl font-display font-semibold text-kratos-ink mt-1">{totalSemBit.toFixed(1)} h</div>
+                <div className="text-[11px] text-kratos-muted mt-0.5">Sem {semanaBit.num} · {semanaBit.rango}</div>
+              </div>
+              <div className="surface-2 p-3">
+                <div className="label-mono">Grúas activas</div>
+                <div className="text-xl font-display font-semibold text-kratos-ink mt-1">{gruasActivasBit}/{flota.gruas.length}</div>
+                <div className="text-[11px] text-kratos-muted mt-0.5">con horas en la semana</div>
+              </div>
+              <div className="surface-2 p-3">
+                <div className="label-mono">Promedio / grúa activa</div>
+                <div className="text-xl font-display font-semibold text-kratos-ink mt-1">{gruasActivasBit ? (totalSemBit / gruasActivasBit).toFixed(1) : '0'} h</div>
+                <div className="text-[11px] text-kratos-muted mt-0.5">horas semanales</div>
+              </div>
+              <div className="surface-2 p-3">
+                <div className="label-mono">Día pico</div>
+                <div className="text-xl font-display font-semibold text-kratos-ink mt-1">{bitacoraSemanal.dias[diaPicoBit]}</div>
+                <div className="text-[11px] text-kratos-muted mt-0.5">{totalDiaBit[diaPicoBit].toFixed(1)} h operadas</div>
+              </div>
+            </div>
+
+            <div className="surface-2 overflow-x-auto">
+              <table className="w-full min-w-[720px]">
+                <thead><tr>
+                  <th className="table-th sticky left-0 bg-kratos-panel-2 z-10">Grúa</th>
+                  {bitacoraSemanal.dias.map(d => <th key={d} className="table-th text-right">{d}</th>)}
+                  <th className="table-th text-right">Total</th>
+                </tr></thead>
+                <tbody>
+                  {flota.gruas.map(g => {
+                    const hs = horasBit(g.eco)
+                    const tot = totalGrua(g.eco)
+                    return (
+                      <tr key={g.eco} className="table-row row-clickable" onClick={() => setGruaSel(g.eco)}>
+                        <td className="table-td sticky left-0 bg-kratos-panel z-10">
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-xs text-kratos-red-glow">{g.eco}</span>
+                            <span className={estadoChip(g.estado)}>{g.estado}</span>
+                          </div>
+                          <div className="text-[10px] text-kratos-muted mt-0.5">{g.operador}</div>
+                        </td>
+                        {hs.map((h, di) => (
+                          <td key={di} className={`table-td text-right font-mono text-xs ${h === 0 ? 'text-kratos-muted/50' : 'text-kratos-text'}`}>{h === 0 ? '—' : h.toFixed(1)}</td>
+                        ))}
+                        <td className={`table-td text-right font-mono text-sm font-semibold ${tot === 0 ? 'text-kratos-muted/50' : 'text-kratos-ink'}`}>{tot === 0 ? '—' : tot.toFixed(1)}</td>
+                      </tr>
+                    )
+                  })}
+                  <tr className="bg-kratos-bg2">
+                    <td className="table-td font-semibold sticky left-0 bg-kratos-bg2 z-10">Total día</td>
+                    {totalDiaBit.map((t, di) => (
+                      <td key={di} className="table-td text-right font-mono text-xs font-semibold text-kratos-ink">{t === 0 ? '—' : t.toFixed(1)}</td>
+                    ))}
+                    <td className="table-td text-right font-mono text-sm font-semibold text-kratos-ink">{totalSemBit.toFixed(1)}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div className="text-[11px] text-kratos-muted px-1">Clic en una grúa para abrir su expediente · G004 en patio (uso esporádico) · G008 en mantenimiento (0 h).</div>
+
+            <div className="mt-5"><BrainPanel tema="horas semanales por grúa" insights={[
+              { tag: 'Oportunidad', tone: 'warn', titulo: 'Capacidad ociosa en unidades de patio', prediccion: `Con ${gruasActivasBit}/${flota.gruas.length} grúas activas, las unidades en patio aportan pocas o cero horas: cada semana sin colocarlas son ~50–60 h facturables no generadas por unidad respecto a una grúa en obra.`, accion: 'Reasignar las unidades de baja carga a la obra de mayor demanda o pausar su costo de stand-by.', confianza: 76 },
+              { tag: 'Tendencia', tone: 'info', titulo: 'Concentración de horas en fin de semana', prediccion: `El día pico (${bitacoraSemanal.dias[diaPicoBit]}) y los sábados sostienen una parte relevante de las ${totalSemBit.toFixed(0)} h semanales; si se mantiene, sube el costo de tiempo extra y el desgaste de operadores de las 100 ton.`, accion: 'Balancear la carga entre semana y reservar el sábado para maniobras de mayor valor/hora.', confianza: 71 },
+            ]}/></div>
+          </TabPanel>
+
           {/* CARGAS */}
           <TabPanel value="cargas" className="p-5 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-2">
               <div className="surface-2 p-3">
                 <div className="label-mono">Cargas mes</div>
                 <div className="text-xl font-display font-semibold text-kratos-ink mt-1">{cargasMes.length}</div>
@@ -526,6 +625,10 @@ export default function Operaciones() {
               <div className="surface-2 p-3">
                 <div className="label-mono">Horas mes</div>
                 <div className="text-xl font-display font-semibold text-kratos-ink mt-1">{horasMes.toFixed(1)} h</div>
+              </div>
+              <div className="surface-2 p-3">
+                <div className="label-mono">Diésel mes</div>
+                <div className="text-xl font-display font-semibold text-kratos-ink mt-1">{litrosMes.toLocaleString()} L</div>
               </div>
               <div className="surface-2 p-3">
                 <div className="label-mono">Ingreso mes</div>
@@ -546,6 +649,7 @@ export default function Operaciones() {
                   <th className="table-th">Sitio</th>
                   <th className="table-th">Tipo</th>
                   <th className="table-th">Horas</th>
+                  <th className="table-th text-right">Litros</th>
                   <th className="table-th text-right">Monto</th>
                   <th className="table-th">Estado</th>
                 </tr></thead>
@@ -559,6 +663,7 @@ export default function Operaciones() {
                       <td className="table-td text-xs text-kratos-subtle">{c.sitio}</td>
                       <td className="table-td text-xs">{c.tipo}</td>
                       <td className="table-td font-mono text-xs">{c.horas} h</td>
+                      <td className="table-td text-right font-mono text-xs">{c.litros ? `${c.litros} L` : '—'}</td>
                       <td className="table-td text-right font-mono text-xs">{fmtMXN(c.monto)}</td>
                       <td className="table-td"><span className={c.estado === 'Facturado' ? 'chip-ok' : 'chip-warn'}>{c.estado}</span></td>
                     </tr>

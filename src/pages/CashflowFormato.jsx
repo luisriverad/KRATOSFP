@@ -17,6 +17,8 @@ const fmtK = (v) => {
   return `${sign}$${a}`
 }
 const toneDif = (d) => (d == null || d === 0 ? 'text-kratos-muted' : d > 0 ? 'text-kratos-ok' : 'text-kratos-danger')
+// Solo la semana cerrada (anterior) muestra Real y Diferencia; actual y siguiente solo Pronóstico.
+const showReal = (s) => s.estado === 'cerrada'
 const clone = (rows) => rows.map(r => ({ ...r, pron: [...r.pron], real: [...r.real] }))
 const cloneGroups = (gs) => gs.map(g => ({ ...g, items: clone(g.items) }))
 const sumW = (rows, key) => cfSemanas.map((_, w) => rows.reduce((s, it) => s + (it[key]?.[w] || 0), 0))
@@ -52,6 +54,14 @@ function EditRow({ label, item, onCell, indent }) {
       <td className={`py-1 text-[13px] ${indent ? 'pl-8 pr-4 text-kratos-subtle' : 'px-4 font-medium text-kratos-ink'} sticky left-0 bg-kratos-panel z-10`}>{label}</td>
       {cfSemanas.map((s, w) => {
         const p = item.pron?.[w] ?? null
+        // Semanas actual / siguiente: solo Pronóstico (una sola celda angosta).
+        if (!showReal(s)) {
+          return (
+            <td key={s.id} className={`${WDIV} p-0`}>
+              <CellInput value={p} onChange={(v) => onCell('pron', w, v)} />
+            </td>
+          )
+        }
         const r = item.real?.[w] ?? null
         const d = (p == null && r == null) ? null : (r || 0) - (p || 0)
         return (
@@ -76,7 +86,16 @@ function CalcRow({ label, pron, real, tone, big }) {
     <tr className={`${bg} ${big ? 'border-y-2 border-kratos-border' : ''}`}>
       <td className={`px-4 py-2 sticky left-0 ${bg} z-10 ${txt}`}>{label}</td>
       {cfSemanas.map((s, w) => {
-        const p = pron[w] || 0, r = real[w] || 0, d = r - p
+        const p = pron[w] || 0
+        // Semanas actual / siguiente: solo Pronóstico.
+        if (!showReal(s)) {
+          return (
+            <td key={s.id} className={WDIV}>
+              <span className="block px-2 py-1.5 text-right font-mono text-[12px] font-semibold tabular-nums text-kratos-ink">{fmtK(p)}</span>
+            </td>
+          )
+        }
+        const r = real[w] || 0, d = r - p
         return (
           <td key={s.id} className={WDIV}>
             <div className="grid grid-cols-3">
@@ -116,11 +135,12 @@ export default function CashflowFormato() {
 
   const wAct = Math.max(0, cfSemanas.findIndex(s => s.estado === 'actual'))
 
+  // La semana actual solo tiene pronóstico → los KPIs muestran el forecast de la semana en curso.
   const kpis = [
-    { label: 'Saldo inicial en bancos', value: bancosReal[wAct] || bancosPron[wAct], icon: Banknote, tone: 'text-kratos-ink' },
-    { label: 'Total entradas (real)',   value: entReal[wAct], icon: TrendingUp,   tone: 'text-kratos-ok' },
-    { label: 'Total salidas (real)',    value: salReal[wAct], icon: TrendingDown, tone: 'text-kratos-danger' },
-    { label: 'Saldo final (real)',      value: finReal[wAct], icon: Wallet, tone: finReal[wAct] >= 0 ? 'text-kratos-ok' : 'text-kratos-danger' }
+    { label: 'Saldo inicial en bancos',   value: bancosPron[wAct], icon: Banknote, tone: 'text-kratos-ink' },
+    { label: 'Total entradas (pron.)',    value: entPron[wAct], icon: TrendingUp,   tone: 'text-kratos-ok' },
+    { label: 'Total salidas (pron.)',     value: salPron[wAct], icon: TrendingDown, tone: 'text-kratos-danger' },
+    { label: 'Saldo final (pron.)',       value: finPron[wAct], icon: Wallet, tone: finPron[wAct] >= 0 ? 'text-kratos-ok' : 'text-kratos-danger' }
   ]
 
   return (
@@ -130,7 +150,7 @@ export default function CashflowFormato() {
         <div>
           <Link to="/finanzas" className="btn-link mb-2 inline-flex"><ArrowLeft size={14}/> Volver a Finanzas</Link>
           <h1 className="font-display text-3xl font-semibold text-kratos-ink tracking-tight">Formato de Forecast · Cashflow Semanal</h1>
-          <p className="text-sm text-kratos-muted mt-1">Pronóstico vs. real por semana · Sem 20 · 21 · 22 (may–jun 2026) · celdas capturables a mano</p>
+          <p className="text-sm text-kratos-muted mt-1">Semana anterior con Real vs. Pronóstico · actual y siguiente solo Pronóstico · Sem 21 · 22 · 23 (may–jun 2026)</p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <button onClick={reset} className="btn-ghost"><RotateCcw size={14}/> Restablecer</button>
@@ -164,18 +184,22 @@ export default function CashflowFormato() {
               {cfSemanas.map(s => (
                 <th key={s.id} className={`${WDIV} text-center px-2 py-2.5 border-b border-kratos-border ${s.estado === 'actual' ? 'bg-kratos-info-soft' : 'bg-kratos-panel-2'}`}>
                   <div className={`font-display text-base font-semibold leading-none ${s.estado === 'actual' ? 'text-kratos-info' : 'text-kratos-ink'}`}>Semana {s.num}</div>
-                  <div className="text-[10px] uppercase tracking-wider text-kratos-muted mt-0.5">{s.rango}{s.estado === 'actual' ? ' · hoy' : s.estado === 'futura' ? ' · proy.' : ''}</div>
+                  <div className="text-[10px] uppercase tracking-wider text-kratos-muted mt-0.5">{s.rango}{s.estado === 'actual' ? ' · hoy' : s.estado === 'futura' ? ' · proy.' : ' · cerrada'}</div>
                 </th>
               ))}
             </tr>
             <tr>
               {cfSemanas.map(s => (
                 <th key={s.id} className={`${WDIV} px-0 bg-kratos-panel-2 border-b border-kratos-border`}>
-                  <div className="grid grid-cols-3 text-[9px] uppercase tracking-wider text-kratos-muted font-semibold">
-                    <span className="px-2 py-1 text-right">Pron.</span>
-                    <span className="px-2 py-1 text-right bg-kratos-panel-2">Real</span>
-                    <span className="px-2 py-1 text-right">Dif.</span>
-                  </div>
+                  {showReal(s) ? (
+                    <div className="grid grid-cols-3 text-[9px] uppercase tracking-wider text-kratos-muted font-semibold">
+                      <span className="px-2 py-1 text-right">Pron.</span>
+                      <span className="px-2 py-1 text-right bg-kratos-panel-2">Real</span>
+                      <span className="px-2 py-1 text-right">Dif.</span>
+                    </div>
+                  ) : (
+                    <span className="block px-2 py-1 text-right text-[9px] uppercase tracking-wider text-kratos-muted font-semibold">Pron.</span>
+                  )}
                 </th>
               ))}
             </tr>
@@ -219,8 +243,9 @@ export default function CashflowFormato() {
       </div>
 
       <p className="text-[11px] text-kratos-muted">
-        Cada bloque <span className="font-semibold">Pron. · Real · Dif.</span> corresponde a una semana (número alineado con la gráfica de Finanzas).
-        Las celdas de <span className="font-semibold">Pron.</span> y <span className="font-semibold">Real</span> se capturan a mano (clic para editar); <span className="font-semibold">Dif.</span> = Real − Pronóstico
+        La <span className="font-semibold">semana actual</span> va en medio. Solo la <span className="font-semibold">semana anterior</span> (cerrada) compara <span className="font-semibold">Pron. · Real · Dif.</span>,
+        porque ya se conoce lo realmente cobrado y pagado; la <span className="font-semibold">actual</span> y la <span className="font-semibold">siguiente</span> muestran solo <span className="font-semibold">Pronóstico</span> (qué cobros y gastos vienen).
+        Las celdas se capturan a mano (clic para editar); <span className="font-semibold">Dif.</span> = Real − Pronóstico
         (<span className="text-kratos-ok">verde</span> a favor, <span className="text-kratos-danger">rojo</span> en contra). Subtotales, totales y saldo final se recalculan solos.
       </p>
     </div>
