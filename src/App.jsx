@@ -9,7 +9,6 @@ import Operaciones from './pages/Operaciones'
 import RRHH from './pages/RRHH'
 import Compras from './pages/Compras'
 import Calidad from './pages/Calidad'
-import Agentes from './pages/Agentes'
 
 export default function App() {
   return (
@@ -24,7 +23,6 @@ export default function App() {
         <Route path="/rrhh"         element={<RRHH />} />
         <Route path="/compras"      element={<Compras />} />
         <Route path="/calidad"      element={<Calidad />} />
-        <Route path="/agentes"      element={<Agentes />} />
         <Route path="*"             element={<Navigate to="/" replace />} />
       </Route>
     </Routes>

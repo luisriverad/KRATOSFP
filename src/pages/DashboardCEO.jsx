@@ -12,6 +12,7 @@ import {
 import KPILight from '../components/KPILight'
 import ProgressBar from '../components/ProgressBar'
 import BrainPanel from '../components/BrainPanel'
+import UploadArchivoMes from '../components/UploadArchivoMes'
 
 const tooltipCfg = { contentStyle: { background:'#FFFFFF', border:'1px solid #E5E3DC', borderRadius:0, fontSize:12 }, labelStyle:{ color:'#4A453F' } }
 
@@ -159,9 +160,6 @@ export default function DashboardCEO() {
         { label: 'Ciclo de conversión de efectivo', value: `${cicloEfectivo} d`, meta: '≤ 30 días',     status: stCiclo,    delta: -3,  vs: 'mes anterior', deltaLabel: `cobro ${dsoDias} · inv ${dioDias} · pago ${dpoDias}`, invertir: true,
           info: 'DSO + DIO − DPO (días de cobranza + días de inventario − días de pago a proveedores). En venta de maquinaria, el inventario importado puede tardar 90–180 días en rotar y los clientes de construcción pagan lento. Si el ciclo se estira, el crecimiento se come la caja aunque haya utilidad en papel.',
           desglose: { titulo: 'Componentes (días)', filas: [{ k: 'Cobranza (DSO)', v: `+${dsoDias} d` }, { k: 'Inventario (DIO)', v: `+${dioDias} d` }, { k: 'Pago a proveedores (DPO)', v: `−${dpoDias} d`, tone: 'ok' }, { k: 'Ciclo neto', v: `${cicloEfectivo} d`, tone: 'ok', fuerte: true }], nota: 'Cada día de cobranza que se reduce libera caja directamente. La palanca rápida está en DSO (55 d es alto).' } },
-        { label: 'Cobertura de servicio de deuda', value: `${dscr}x`,            meta: '≥ 1.5x',        status: stDSCR,     delta: 6,   vs: 'trimestre', deltaLabel: 'EBITDA / servicio deuda',
-          info: 'EBITDA / servicio de deuda. La flota casi siempre está financiada (floor plan, arrendamiento, crédito refaccionario). Debe mantenerse arriba de 1.25x; debajo de eso, el negocio trabaja para el banco.',
-          desglose: { titulo: 'Cómo se calcula', filas: [{ k: `EBITDA del mes (${MESES[mesIdx].label})`, v: fmtMXN(ebitdaMes.ebitda) }, { k: 'Servicio de deuda / mes', v: fmtMXN(servicioDeudaMes) }, { k: 'Cobertura (DSCR)', v: `${dscr}x`, tone: 'ok', fuerte: true }], nota: 'Por debajo de 1.25x el EBITDA no alcanza para el pago de deuda y el negocio trabaja para el banco.' } },
         { label: 'Margen bruto por línea',       value: `${margenBruto}%`,       meta: '≥ 30%',         status: stMargenBr, delta: 2,   vs: 'trimestre', deltaLabel: `exposición USD ${exposicionUSD}%`,
           info: 'Margen bruto por línea de negocio con exposición cambiaria. Venta, renta, servicio y transporte tienen márgenes radicalmente distintos, y el costo de adquisición está en USD mientras el ingreso está en MXN. Sin esta separación, la venta de equipo (margen bajo, volumen alto) maquilla la rentabilidad real.',
           desglose: { titulo: 'Margen por línea de negocio', filas: [{ k: 'Renta de equipo', v: '42%', tone: 'ok' }, { k: 'Servicio y mantenimiento', v: '35%', tone: 'ok' }, { k: 'Transporte especializado', v: '22%' }, { k: 'Venta de equipo', v: '12%', tone: 'warn' }, { k: 'Consolidado', v: `${margenBruto}%`, fuerte: true }], nota: `Exposición USD: ${exposicionUSD}% de ingresos. La venta (margen bajo, volumen alto) diluye el consolidado; sin separar líneas, oculta la rentabilidad real de la renta.` } }
@@ -181,10 +179,7 @@ export default function DashboardCEO() {
           desglose: { titulo: 'Documentos próximos a vencer (30 días)', filas: docsVencer.map(g => ({ k: `${g.eco} · ${g.marca} ${g.capacidad}`, v: g.docVence, tone: 'warn' })), nota: 'El agente AG-08 monitorea estas fechas y alerta con anticipación para evitar paros por documentación.' } },
         { label: 'OEE-Obra',            value: `${oeeObra}%`,           meta: '≥ 75% (por equipo)', status: stOEE,      delta: 2, vs: 'mes anterior', deltaLabel: `Disp ${oeeDisp}% · Rend ${oeeRend}% · Cal ${oeeCal}%`,
           info: 'Desempeño en obra = Disponibilidad × Rendimiento × Calidad. Un solo número de "desempeño" no se puede mejorar porque no se puede descomponer: cuando baja, nadie sabe si la máquina estuvo caída, rindió poco o causó un incidente. OEE-Obra separa la pérdida en tres factores atacables con Kaizen: Disponibilidad (horas operables / horas contratadas en sitio), Rendimiento (producción real / nominal, donde haya tasa medible) y Calidad (horas sin incidencia atribuible a Kratos). El producto de los tres es la tarjeta; los tres factores son el drill-down. Meta fijada por tipo de equipo, no importada de manufactura — la flota opera a la intemperie, no en una línea controlada. Un solo dato avisa que algo falla en obra; OEE-Obra dice qué falla y dónde intervenir.',
-          desglose: { titulo: 'Factores (drill-down)', filas: [{ k: 'Disponibilidad', v: `${oeeDisp}%` }, { k: 'Rendimiento', v: `${oeeRend}%` }, { k: 'Calidad', v: `${oeeCal}%`, tone: 'ok' }, { k: 'OEE-Obra (producto)', v: `${oeeObra}%`, tone: 'ok', fuerte: true }], nota: `${oeeDisp}% × ${oeeRend}% × ${oeeCal}% = ${oeeObra}%. El factor más bajo es donde se interviene primero con Kaizen.` } },
-        { label: 'Costo mantenimiento / ingreso', value: `${costoManttoPct}%`, meta: '< 10–12%', status: stCostoMantto, delta: -1, vs: 'mes anterior', deltaLabel: `preventivo ${mantPreventivo}% · correctivo ${mantCorrectivo}%`, invertir: true,
-          info: 'Costo de mantenimiento del mes / ingreso operativo del mes. Es lo que Operación realmente controla (no el ingreso, que duplica la fila de Finanzas). Meta < 10–12%. La mezcla preventivo vs. correctivo avisa antes de que la flota se caiga: cuando domina el correctivo, el indicador se enciende.',
-          desglose: { titulo: 'Costo de mantenimiento', filas: [{ k: 'Costo mantto / mes', v: fmtMXN(costoManttoMes) }, { k: 'Ingreso operativo / mes', v: fmtMXN(ingresoOpMes) }, { k: 'Costo / ingreso', v: `${costoManttoPct}%`, tone: 'ok', fuerte: true }, { k: 'Preventivo', v: `${mantPreventivo}%`, tone: 'ok' }, { k: 'Correctivo', v: `${mantCorrectivo}%`, tone: 'warn' }], nota: 'Cuando el correctivo domina al preventivo, sube el costo y se anticipan paros no planeados.' } }
+          desglose: { titulo: 'Factores (drill-down)', filas: [{ k: 'Disponibilidad', v: `${oeeDisp}%` }, { k: 'Rendimiento', v: `${oeeRend}%` }, { k: 'Calidad', v: `${oeeCal}%`, tone: 'ok' }, { k: 'OEE-Obra (producto)', v: `${oeeObra}%`, tone: 'ok', fuerte: true }], nota: `${oeeDisp}% × ${oeeRend}% × ${oeeCal}% = ${oeeObra}%. El factor más bajo es donde se interviene primero con Kaizen.` } }
       ]
     },
     {
@@ -196,9 +191,6 @@ export default function DashboardCEO() {
         { label: 'Ventas cerradas mes',  value: fmtMXN(ganadasMes),   meta: '> $2.5M',          status: stGanadas,    delta: 22,  vs: 'mes anterior', deltaLabel: '3 oportunidades',
           info: 'Monto de oportunidades ganadas y firmadas en el mes. Es el resultado comercial real del periodo, no el embudo. Meta > $2.5M mensuales.',
           desglose: { titulo: 'Cierres del mes', filas: [{ k: 'Oportunidades ganadas', v: '3' }, { k: 'Ticket promedio', v: fmtMXN(Math.round(ganadasMes / 3)) }, { k: 'Total cerrado', v: fmtMXN(ganadasMes), tone: 'ok', fuerte: true }], nota: 'Resultado real del periodo (firmado), distinto del pipeline que aún no se cierra.' } },
-        { label: 'Tasa de cierre',       value: `${hitRate}%`,         meta: '≥ 35%',           status: stHitRate,    delta: 5,   vs: 'trimestre', deltaLabel: 'ganadas / decididas',
-          info: 'Oportunidades ganadas / oportunidades decididas (ganadas + perdidas). Mide la efectividad del equipo comercial para convertir prospectos en ventas. Meta ≥ 35%.',
-          desglose: { titulo: 'Conversión (trimestre)', filas: [{ k: 'Oportunidades decididas', v: '~50' }, { k: 'Ganadas', v: `17 (${hitRate}%)`, tone: 'ok' }, { k: 'Perdidas', v: '33 (66%)', tone: 'warn' }], nota: 'Justo debajo de la meta de 35%. Subir 1 punto de cierre vale más que ampliar el pipeline.' } },
         { label: 'Contratos por ejecutar', value: fmtMXN(backlogContratos), meta: '≥ 2 meses ingreso', status: stBacklog, delta: 12, vs: 'mes anterior', deltaLabel: `≈ ${mesesAsegurados.toFixed(1)} meses de ingreso asegurados`,
           info: 'La venta firmada que aún no se entrega ni se factura: equipos vendidos pendientes de importar y rentas contratadas a futuro. En maquinaria, donde entre la firma y la entrega pasan 90–180 días, dice cuántos meses de ingreso ya están asegurados. Es el puente entre Comercial y Operación: lo que esta fila promete, la otra lo entrega. Meta ≥ 2 meses de ingreso.',
           desglose: { titulo: 'Backlog firmado', filas: [{ k: 'Equipos vendidos por importar', v: fmtMXN(8600000) }, { k: 'Rentas contratadas a futuro', v: fmtMXN(5600000) }, { k: 'Total por ejecutar', v: fmtMXN(backlogContratos), tone: 'ok', fuerte: true }], nota: `≈ ${mesesAsegurados.toFixed(1)} meses de ingreso ya asegurados. Es la carga de trabajo que Operación debe entregar.` } },
@@ -235,6 +227,9 @@ export default function DashboardCEO() {
           </div>
         </div>
       </section>
+
+      {/* Subir archivo del mes (drag & drop) */}
+      <UploadArchivoMes mesLabel={`de ${MESES[mesIdx].label} 2026`}/>
 
       {/* Resultados YTD strip */}
       <section className="panel">
@@ -379,24 +374,6 @@ export default function DashboardCEO() {
               })}
             </tbody>
           </table>
-        </div>
-      </section>
-
-      {/* Costo de No Calidad */}
-      <section>
-        <div className="flex items-baseline justify-between mb-3">
-          <h2 className="section-title flex items-center gap-2"><Target size={16} className="text-kratos-muted"/> Costo de no calidad</h2>
-          <span className="label-mono text-kratos-danger">{fmtMXN(costoNCTotal)} mes</span>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-3">
-          {costoNoCalidad.map((c, i) => (
-            <div key={i} className="panel p-4">
-              <div className="label-mono">{c.concepto}</div>
-              <div className="font-display text-xl font-semibold text-kratos-danger mt-1">{fmtMXN(c.monto)}</div>
-              <div className="text-[11px] text-kratos-muted mt-1">{c.eventos} eventos</div>
-              <div className="text-[12px] text-kratos-subtle mt-2">{c.detalle}</div>
-            </div>
-          ))}
         </div>
       </section>
 

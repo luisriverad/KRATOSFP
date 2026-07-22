@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react'
 import { Bot, MessageSquare, Mail, Smartphone, Clock, Save, Play, Pause, Plus, Sparkles, Users, User, Check, Building2, ChevronLeft, MoreVertical, Phone, Video } from 'lucide-react'
-import PageHeader from '../components/PageHeader'
 import { finanzas, fmtMXN } from '../data/mockData'
 
 const CANALES = [
@@ -57,10 +56,14 @@ export default function Agentes() {
 
   return (
     <div className="space-y-7">
-      <PageHeader
-        title="Automatizaciones e inteligencia"
-        badges={[{ label: activo ? 'Activo' : 'Pausado', className: activo ? 'chip-ok' : 'chip-muted' }]}
-      />
+      <div className="flex items-center justify-between border-t border-kratos-border pt-6">
+        <div className="flex items-center gap-2.5">
+          <Bot size={16} className="text-kratos-muted"/>
+          <h2 className="section-title">Automatizaciones e inteligencia</h2>
+          <span className={activo ? 'chip-ok' : 'chip-muted'}>{activo ? 'Activo' : 'Pausado'}</span>
+        </div>
+        <span className="label-mono">Agentes IA configurables</span>
+      </div>
 
       <section className="grid grid-cols-1 xl:grid-cols-[1.5fr_1fr] gap-6">
         {/* Configuración */}

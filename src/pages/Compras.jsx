@@ -10,6 +10,7 @@ import ExpedienteProveedor from '../components/expedientes/ExpedienteProveedor'
 import ProgressBar from '../components/ProgressBar'
 import SortableTH from '../components/SortableTH'
 import BrainPanel from '../components/BrainPanel'
+import UploadArchivoMes from '../components/UploadArchivoMes'
 import { compras, agentes, usuarios, checklists, fmtMXN } from '../data/mockData'
 import { expedientesProveedores, proveedorIndex, inventarioCompleto, ordenesCompra, listaCompras } from '../data/comprasData'
 import { reordenPredictivo, alertasSobreprecio, deteccionFraude, inventarioMuerto, formatosCompras } from '../data/iaData'
@@ -100,7 +101,17 @@ export default function Compras() {
           </TabsList>
 
           {/* REQUISICIONES */}
-          <TabPanel value="requis" className="p-5">
+          <TabPanel value="requis" className="p-5 space-y-4">
+            {/* Arrastra Excel (drag & drop) */}
+            <UploadArchivoMes
+              flat
+              icon={FileSpreadsheet}
+              titulo="Arrastra Excel"
+              subtitulo="Excel con las requisiciones"
+              tipoArchivo="el Excel"
+              textoExito="Archivo cargado correctamente"
+            />
+
             <div className="surface-2 overflow-hidden">
               <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-kratos-border">
                 <h3 className="section-title text-sm">Requisiciones del mes</h3>
@@ -141,7 +152,17 @@ export default function Compras() {
           </TabPanel>
 
           {/* OCs */}
-          <TabPanel value="ocs" className="p-5">
+          <TabPanel value="ocs" className="p-5 space-y-4">
+            {/* Arrastra Excel (drag & drop) */}
+            <UploadArchivoMes
+              flat
+              icon={FileSpreadsheet}
+              titulo="Arrastra Excel"
+              subtitulo="Excel con las órdenes de compra"
+              tipoArchivo="el Excel"
+              textoExito="Archivo cargado correctamente"
+            />
+
             <div className="surface-2 overflow-hidden">
               <table className="w-full">
                 <thead><tr>
@@ -175,7 +196,17 @@ export default function Compras() {
           </TabPanel>
 
           {/* PROVEEDORES */}
-          <TabPanel value="proveedores" className="p-5">
+          <TabPanel value="proveedores" className="p-5 space-y-4">
+            {/* Arrastra Excel (drag & drop) */}
+            <UploadArchivoMes
+              flat
+              icon={FileSpreadsheet}
+              titulo="Arrastra Excel"
+              subtitulo="Excel con el catálogo de proveedores"
+              tipoArchivo="el Excel"
+              textoExito="Archivo cargado correctamente"
+            />
+
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
               {proveedorIndex.map(p => {
                 const exp = expedientesProveedores[p.key]

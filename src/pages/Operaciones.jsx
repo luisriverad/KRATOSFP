@@ -13,6 +13,7 @@ import ExpedienteGrua from '../components/expedientes/ExpedienteGrua'
 import MiniMap from '../components/MiniMap'
 import Timeline from '../components/Timeline'
 import BrainPanel from '../components/BrainPanel'
+import UploadArchivoMes from '../components/UploadArchivoMes'
 import { flota, agentes, checklists, usuarios, rrhh, fmtMXN } from '../data/mockData'
 import { expedientesGruas, expedientesVehiculos } from '../data/expedientesData'
 import { bitacoraDiaria, bitacoraSemanal, controlCargas, rutasSCT, procesoDPI } from '../data/operacionesData'
@@ -163,6 +164,16 @@ export default function Operaciones() {
               </div>
               <Link to="/" className="btn-link shrink-0">Ver en Dashboard CEO <ChevronRight size={14}/></Link>
             </div>
+
+            {/* Subir reporte en Excel (drag & drop) */}
+            <UploadArchivoMes
+              flat
+              icon={FileSpreadsheet}
+              titulo="Subir reporte en Excel"
+              subtitulo="Excel con el reporte de desempeño"
+              tipoArchivo="el Excel con el reporte de desempeño"
+              textoExito="Reporte cargado correctamente"
+            />
 
             {/* HÉROES: OEE-Obra & OTIF */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -475,7 +486,17 @@ export default function Operaciones() {
           </TabPanel>
 
           {/* BITÁCORA */}
-          <TabPanel value="bitacora" className="p-5">
+          <TabPanel value="bitacora" className="p-5 space-y-4">
+            {/* Arrastra reporte en Excel (drag & drop) */}
+            <UploadArchivoMes
+              flat
+              icon={FileSpreadsheet}
+              titulo="Arrastra reporte en Excel"
+              subtitulo="Excel con el reporte de bitácora"
+              tipoArchivo="el Excel con el reporte"
+              textoExito="Reporte cargado correctamente"
+            />
+
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
               <div className="surface-2 p-4 xl:col-span-2">
                 <div className="flex items-center justify-between mb-3">
@@ -531,6 +552,16 @@ export default function Operaciones() {
 
           {/* BITÁCORA SEMANAL */}
           <TabPanel value="bitsemanal" className="p-5 space-y-4">
+            {/* Arrastra reporte en Excel (drag & drop) */}
+            <UploadArchivoMes
+              flat
+              icon={FileSpreadsheet}
+              titulo="Arrastra reporte en Excel"
+              subtitulo="Excel con las horas por grúa de la semana"
+              tipoArchivo="el Excel con el reporte"
+              textoExito="Reporte cargado correctamente"
+            />
+
             <div className="flex items-start justify-between gap-4 flex-wrap">
               <div>
                 <h3 className="section-title">Bitácora semanal de horas por grúa</h3>
@@ -617,6 +648,16 @@ export default function Operaciones() {
 
           {/* CARGAS */}
           <TabPanel value="cargas" className="p-5 space-y-4">
+            {/* Arrastra reporte en Excel (drag & drop) */}
+            <UploadArchivoMes
+              flat
+              icon={FileSpreadsheet}
+              titulo="Arrastra reporte en Excel"
+              subtitulo="Excel con el control de cargas"
+              tipoArchivo="el Excel con el reporte"
+              textoExito="Reporte cargado correctamente"
+            />
+
             <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-2">
               <div className="surface-2 p-3">
                 <div className="label-mono">Cargas mes</div>
@@ -797,7 +838,17 @@ export default function Operaciones() {
           </TabPanel>
 
           {/* SCORE OPERADOR */}
-          <TabPanel value="opscore" className="p-5">
+          <TabPanel value="opscore" className="p-5 space-y-4">
+            {/* Arrastra reporte en Excel (drag & drop) */}
+            <UploadArchivoMes
+              flat
+              icon={FileSpreadsheet}
+              titulo="Arrastra reporte en Excel"
+              subtitulo="Excel con el score de operadores"
+              tipoArchivo="el Excel con el reporte"
+              textoExito="Reporte cargado correctamente"
+            />
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {scoreOperadores.map(o => (
                 <div key={o.operador} className="panel p-5">

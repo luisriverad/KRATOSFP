@@ -29,8 +29,7 @@ export const modulos = [
   { id: 'operaciones', numero: '04', label: 'Operaciones',        kicker: 'Flota · Bitácora · Cargas',   icon: 'Truck',            path: '/operaciones',   group: 'Operación'    },
   { id: 'compras',     numero: '05', label: 'Compras y Almacén',   kicker: 'Requisiciones · Inventario', icon: 'Package',          path: '/compras',       group: 'Operación'    },
   { id: 'rrhh',        numero: '06', label: 'Recursos Humanos',    kicker: 'Personal · Documentos',      icon: 'Users',            path: '/rrhh',          group: 'Operación'    },
-  { id: 'calidad',     numero: '08', label: 'Calidad',             kicker: 'NC · Auditorías · Checklists',icon: 'ShieldCheck',      path: '/calidad',       group: 'Operación'    },
-  { id: 'agentes',     numero: '09', label: 'Automatizaciones',    kicker: 'Agentes IA configurables',   icon: 'Bot',              path: '/agentes',       group: 'Inteligencia' }
+  { id: 'calidad',     numero: '08', label: 'Calidad',             kicker: 'NC · Auditorías · Checklists',icon: 'ShieldCheck',      path: '/calidad',       group: 'Operación'    }
 ]
 
 // ============================================================

@@ -105,8 +105,6 @@ export default function Calidad() {
         <Tabs value={tab} onChange={setTab}>
           <TabsList>
             <Tab value="certif"      icon={Award}        badge={calidad.certificacionesGruas.length}>Certificaciones</Tab>
-            <Tab value="costoNC"     icon={DollarSign}>Costo no calidad</Tab>
-            <Tab value="recurr"      icon={Repeat}        badge={ncRecurrentes.length}>NC recurrentes</Tab>
             <Tab value="legales"     icon={ScrollText}    badge={alertasLegales.filter(a => a.estado === 'proximo').length || null}>Alertas legales</Tab>
           </TabsList>
 
@@ -130,110 +128,6 @@ export default function Calidad() {
             <div className="mt-5"><BrainPanel tema="certificaciones de grúas" insights={[
               { tag: 'Alerta temprana', tone: 'danger', titulo: 'Recertificación ISO 9001 en riesgo de gap', prediccion: `Con ${certifVencen} de ${certTotal} certificados por vencer en los próximos 30 días, el primero (ISO 9001) caduca el 15 ago; sin auditoría de recertificación agendada antes del 1 jul, el 60% de las grúas afectadas operaría sin cobertura entre ago y sep.`, accion: 'Agendar la auditoría de recertificación antes del 1 jul y consolidar los vencimientos en un solo ciclo anual para evitar gaps.', confianza: 88 },
               { tag: 'Proyección', tone: 'warn', titulo: 'Vencimientos NOM se concentran en Q3', prediccion: `Manteniendo el patrón actual, ~${Math.max(2, certifVencen + 1)} certificados (NOM-006-STPS de grúas) vencerán dentro del mismo trimestre, generando un pico de trámites y costos de inspección estimado en 1.4x el mes promedio hacia Q3.`, accion: 'Escalonar las renovaciones NOM y negociar tarifa por volumen con la unidad verificadora antes de agosto.', confianza: 76 },
-            ]}/></div>
-          </TabPanel>
-
-          {/* COSTO NO CALIDAD */}
-          <TabPanel value="costoNC" className="p-5 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-3">
-              {costoNoCalidad.map((c, i) => (
-                <div key={i} className="panel p-4">
-                  <div className="label-mono">{c.concepto}</div>
-                  <div className="font-display text-xl font-semibold text-kratos-danger mt-1">{fmtMXN(c.monto)}</div>
-                  <div className="text-[11px] text-kratos-muted mt-1">{c.eventos} eventos</div>
-                  <div className="text-[12px] text-kratos-subtle mt-2">{c.detalle}</div>
-                </div>
-              ))}
-            </div>
-            <div className="panel p-5">
-              <div className="flex items-baseline justify-between mb-3">
-                <h3 className="section-title text-base">Total mensual</h3>
-                <span className="font-display text-3xl font-semibold text-kratos-danger">{fmtMXN(costoNoCalidad.reduce((s,c)=>s+c.monto,0))}</span>
-              </div>
-              <p className="text-[12px] text-kratos-subtle">
-                Si reducimos este costo en 50%, recuperamos {fmtMXN(costoNoCalidad.reduce((s,c)=>s+c.monto,0) / 2)} mensuales — equivalente al pago de 4 operadores.
-              </p>
-            </div>
-
-            {/* Análisis por Kratos FP Brain */}
-            {!showAnalisis ? (
-              <button onClick={() => setShowAnalisis(true)}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-none bg-kratos-ink text-white text-sm font-semibold hover:opacity-90 transition">
-                <BrainCircuit size={18}/> Análisis por Kratos FP Brain
-              </button>
-            ) : (
-              <div className="space-y-3">
-                <div className="flex items-center gap-2.5">
-                  <span className="w-9 h-9 rounded-none bg-kratos-ink text-white flex items-center justify-center shrink-0"><BrainCircuit size={17}/></span>
-                  <div>
-                    <h3 className="font-display text-base font-semibold text-kratos-ink leading-tight">Análisis por Kratos FP Brain</h3>
-                    <p className="text-[12px] text-kratos-muted">Recomendaciones y planes de trabajo sobre los mayores costos de no calidad</p>
-                  </div>
-                  <button onClick={() => setShowAnalisis(false)} className="ml-auto text-[12px] text-kratos-muted hover:text-kratos-ink">Ocultar</button>
-                </div>
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-                  {ANALISIS_BRAIN.map((r, i) => (
-                    <div key={i} className="panel p-5 border-t-2 border-t-kratos-ink flex flex-col">
-                      <div className="flex items-start justify-between gap-2 mb-2">
-                        <span className="label-mono">Recomendación {i + 1}</span>
-                        <span className="chip-danger">{fmtMXN(r.monto)}/mes</span>
-                      </div>
-                      <h4 className="font-display text-base font-semibold text-kratos-ink leading-snug">{r.foco}</h4>
-                      <p className="text-[13px] text-kratos-subtle mt-2 leading-relaxed">{r.recomendacion}</p>
-                      <div className="mt-3">
-                        <div className="label-mono mb-1.5">Plan de trabajo</div>
-                        <ul className="space-y-1.5">
-                          {r.plan.map((p, j) => (
-                            <li key={j} className="flex items-start gap-2 text-[12px] text-kratos-subtle">
-                              <span className="mt-0.5 w-4 h-4 rounded-full bg-kratos-ink/10 text-kratos-ink text-[9px] font-semibold flex items-center justify-center shrink-0">{j + 1}</span>
-                              <span>{p}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div className="mt-4 pt-3 border-t border-kratos-border text-[12px] flex items-center justify-between">
-                        <span className="text-kratos-muted">Ahorro estimado</span>
-                        <span className="font-mono font-semibold text-kratos-ok">{fmtMXN(r.ahorro)}/mes</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </TabPanel>
-
-          {/* NC RECURRENTES IA */}
-          <TabPanel value="recurr" className="p-5">
-            <div className="surface-2 overflow-hidden">
-              <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-kratos-border">
-                <h3 className="section-title text-sm">Patrones recurrentes detectados</h3>
-                <button className="btn-primary" onClick={() => setShowNC(true)}><AlertOctagon size={14}/> Levantar NC</button>
-              </div>
-              <table className="w-full">
-                <thead><tr>
-                  <th className="table-th">Patrón detectado</th>
-                  <th className="table-th">Repeticiones</th>
-                  <th className="table-th">Área</th>
-                  <th className="table-th">Período</th>
-                  <th className="table-th">Acción IA</th>
-                </tr></thead>
-                <tbody>
-                  {ncRecurrentes.map((n, i) => (
-                    <tr key={i} className="table-row">
-                      <td className="table-td font-medium">{n.patron}</td>
-                      <td className="table-td"><span className={n.repeticiones >= 5 ? 'chip-danger' : n.repeticiones >= 3 ? 'chip-warn' : 'chip-info'}>{n.repeticiones}x</span></td>
-                      <td className="table-td">{n.area}</td>
-                      <td className="table-td font-mono text-xs">{n.mes}</td>
-                      <td className="table-td text-sm font-medium">{n.accion}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <div className="mt-3 text-[11px] text-kratos-subtle px-2">IA detecta patrones repetidos para implementar controles preventivos automáticos.</div>
-            <div className="mt-5"><BrainPanel tema="no conformidades recurrentes" insights={[
-              { tag: 'Tendencia', tone: 'danger', titulo: 'NC por amarre/rigging escalan a crítico', prediccion: `Los patrones con ${ncRecRepetic} repeticiones acumuladas crecen ~18% mes a mes; las NC por amarre reincidirán cerca de 3 veces más en Q3 y la más frecuente cruzará el umbral crítico (5x) en 6-8 semanas si no se estandariza el procedimiento de rigging.`, accion: 'Estandarizar el rigging con checklist pre-izaje obligatorio y recertificar operadores reincidentes antes de cerrar julio.', confianza: 84 },
-              { tag: 'Oportunidad', tone: 'warn', titulo: 'Tres patrones concentran el costo evitable', prediccion: `El 70% de las repeticiones proviene de 3 patrones; atacándolos con control preventivo automático se proyecta reducir la reincidencia ~45% en 90 días y evitar 8-10 NC nuevas por trimestre.`, accion: 'Disparar un control automático (alerta + bloqueo de operación) ligado a los 3 patrones de mayor repetición.', confianza: 79 },
             ]}/></div>
           </TabPanel>
 
